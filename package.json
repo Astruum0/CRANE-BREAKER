@@ -1,0 +1,29 @@
+{
+    "name": "crane-breaker",
+    "version": "1.0.0",
+    "description": "Brick breaker game with face-api.js",
+    "main": "index.js",
+    "scripts": {
+        "start": "electron ."
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Astruum0/CRANE-BREAKER.git"
+    },
+    "keywords": [
+        "BRICK",
+        "BREAKER"
+    ],
+    "author": "Arthur VELLA, Romain RANAIVOSON",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/Astruum0/CRANE-BREAKER/issues"
+    },
+    "homepage": "https://github.com/Astruum0/CRANE-BREAKER#readme",
+    "dependencies": {
+        "electron": "^12.0.2"
+    },
+    "devDependencies": {
+        "electron-packager": "^15.2.0"
+    }
+}
