@@ -12,3 +12,15 @@ body {
     justify-content: center;
     align-items: center;
 }
+
+canvas {
+    position: absolute;
+}
+
+
+/* #video {
+    transform: rotateY(180deg);
+    -webkit-transform: rotateY(180deg);
+    -moz-transform: rotateY(180deg);
+
+} */

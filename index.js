@@ -11,7 +11,7 @@ app.on("ready", () => {
     timerWindow = new BrowserWindow({ titleBarStyle: "hidden" });
     timerWindow.loadURL(
         url.format({
-            pathname: path.join(__dirname, "views", "index.html"),
+            pathname: path.join(__dirname, "views", "game.html"),
             protocol: "file",
             slashes: true,
         })
