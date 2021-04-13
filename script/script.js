@@ -1,26 +1,10 @@
 const video = document.getElementById("video");
+video.width = window.screen.width;
+video.height = window.screen.height;
 
-// var $video = $("video"),
-//     $window = $(window);
+var topLeftX, topLeftY, topRightX, topRightY;
 
-// $(window)
-//     .resize(function() {
-//         var height = $window.height();
-//         $video.css("height", height);
-
-//         var videoWidth = $video.width(),
-//             windowWidth = $window.width();
-
-//         $video.css({
-//             height: height,
-//         });
-//     })
-//     .resize();
-
-Promise.all([
-    faceapi.nets.tinyFaceDetector.loadFromUri("../models"),
-    faceapi.nets.faceLandmark68Net.loadFromUri("../models"),
-]).then(startVideo);
+const player = new Pad();
 
 function startVideo() {
     navigator.getUserMedia({ video: {} },
@@ -30,17 +14,37 @@ function startVideo() {
 }
 
 video.addEventListener("play", () => {
-    const canvas = faceapi.createCanvasFromMedia(video);
-    document.getElementsByClassName("container")[0].append(canvas);
     const displaySize = { width: video.width, height: video.height };
-    faceapi.matchDimensions(canvas, displaySize);
+
     setInterval(async() => {
         const detections = await faceapi.detectAllFaces(
             video,
             new faceapi.TinyFaceDetectorOptions()
         );
         const resizedDetections = faceapi.resizeResults(detections, displaySize);
-        canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
-        faceapi.draw.drawDetections(canvas, resizedDetections);
+        if (resizedDetections[0]) {
+            topLeftX = video.width - resizedDetections[0].box.topLeft.x;
+            topLeftY = resizedDetections[0].box.topLeft.y;
+            topRightX = (resizedDetections[0].box.topRight.x - video.width) * -1;
+            topRightY = resizedDetections[0].box.topRight.y;
+
+            player.update((topLeftX + topRightX) / 2, topLeftY);
+        }
     }, 100);
 });
+
+function setup() {
+    const canvas = createCanvas(video.width, video.height);
+    console.log(video.width, video.height);
+    canvas.parent("container");
+
+    Promise.all([
+        faceapi.nets.tinyFaceDetector.loadFromUri("../models"),
+        faceapi.nets.faceLandmark68Net.loadFromUri("../models"),
+    ]).then(startVideo);
+}
+
+function draw() {
+    clear();
+    player.show();
+}
