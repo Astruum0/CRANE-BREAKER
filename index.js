@@ -20,5 +20,6 @@ app.on("ready", () => {
             slashes: true,
         })
     );
+    timerWindow.removeMenu()
     timerWindow.maximize();
 });
