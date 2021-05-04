@@ -44,11 +44,14 @@
 
     <script>
         function displayUsername() {
-            var element = document.getElementById("welcome");
-            element.classList.remove("invisible");
+            if (store.get('connected') == true) {
+                var element = document.getElementById("welcome");
+                element.classList.remove("invisible");
+            } else {
+                console.log('Error');
+            }
         }
     </script>
-    <script src="../script/dbconnect.js"></script>
 </body>
 
 </html>
