@@ -2,18 +2,19 @@
 <html lang="en">
 
 <head>
-    <title>CRANE BREAKER - Inscription</title>
+    <title>CRANE BREAKER - Profil</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
     <link rel="stylesheet" href="../styles/style.css" />
-    <script src="../index.js"></script>
-    <script src="../script/dbconnect.js"></script>
     <script>
-        if (store.get("connected") == true) {
+        const { myConsole } = require('../index.js');
+        console.log(myConsole);
+        if (isCon == 'true') {
             true;
         } else {
             redirection('login.html');
         }
+        window.location.replace('register.html');
     </script>
 </head>
 
