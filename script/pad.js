@@ -24,11 +24,11 @@ class Pad {
                 [this.x - this.width / 2, this.y],
                 [this.x + this.width / 2, this.y],
                 [
-                    this.x - this.width / 2 - this.direction.x,
+                    this.x + this.width / 2 - this.direction.x,
                     this.y + this.height - this.direction.y,
                 ],
                 [
-                    this.x + this.width / 2 - this.direction.x,
+                    this.x - this.width / 2 - this.direction.x,
                     this.y + this.height - this.direction.y,
                 ],
             ];
@@ -36,8 +36,8 @@ class Pad {
             this.hitbox = [
                 [this.x - this.width / 2 - this.direction.x, this.y - this.direction.y],
                 [this.x + this.width / 2 - this.direction.x, this.y - this.direction.y],
-                [this.x - this.width / 2, this.y + this.height],
                 [this.x + this.width / 2, this.y + this.height],
+                [this.x - this.width / 2, this.y + this.height],
             ];
         }
     }
@@ -47,6 +47,6 @@ class Pad {
         strokeWeight(1);
         rect(this.x - this.width / 2, this.y, this.width, this.height);
         strokeWeight(4);
-        line(this.x, this.y, this.x + this.direction.x, this.y + this.direction.y);
+        //line(this.x, this.y, this.x + this.direction.x, this.y + this.direction.y);
     }
 }

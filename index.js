@@ -8,7 +8,13 @@ let timerWindow;
 let settingsWindow;
 
 app.on("ready", () => {
-    timerWindow = new BrowserWindow({ titleBarStyle: "hidden" });
+    timerWindow = new BrowserWindow({
+        webPreferences: {
+            nodeIntegration: true,
+            contextIsolation: false,
+        },
+        titleBarStyle: "hidden",
+    });
     timerWindow.loadURL(
         url.format({
             pathname: path.join(__dirname, "views", "game.html"),
