@@ -1,5 +1,5 @@
 const mysql = require('mysql');
-const { ipcRenderer } = require('electron');
+// const test2 = document.getElementById("tab");
 
 var con = mysql.createConnection({
     host: "86.234.96.174",
@@ -24,20 +24,27 @@ $scorequery = 'SELECT level_id, level_highscore FROM levels LIMIT 10';
 // Récupération high scores
 
 
-const test = function getHighScores() {
-    con.query($scorequery, function (err, rows) {
-        if (err) throw err;
+// function getHighScores() {
+//     con.query($scorequery, function (err, rows) {
+//         if (err) throw err;
 
-        ipcRenderer.send('bar', "I did something for you");
+//         const tab = document.getElementById("tab");
+//         tab.innerHTML = '2';
+//         const levelnbr = document.getElementById("levelnbr");
+//         levelnbr.innerHTML = '3';
 
-        // const tab = document.getElementById("tab");
-        // tab.innerHTML = '2';
-        // const levelnbr = document.getElementById("levelnbr");
-        // levelnbr.innerHTML = '3';
+//         console.log('woohoo', rows);
+//     });
+// };
 
-        // console.log('woohoo', rows);
-    });
-};
+function getHighScores() {
+    const tab = document.getElementById("tab");
+    tab.innerHTML = '2';
+    const levelnbr = document.getElementById("levelnbr");
+    levelnbr.innerHTML = '3';
+
+    console.log('woohoo', rows);
+}
 
 con.query($query, function (err, rows) {
     if (err) throw err;
