@@ -20,6 +20,21 @@ con.connect(function (err) {
 
 $query = 'SELECT * FROM `user` LIMIT 10';
 
+$scorequery = 'SELECT level_id, level_highscore FROM levels LIMIT 10';
+
+// Récupération high scores
+
+function getHighScores() {
+    con.query($scorequery, function (err, rows) {
+        if (err) throw err;
+
+        const tab = document.getElementById("tab");
+        const leveln = document.getElementById("levelnbr");
+
+        console.log(rows);
+    });
+};
+
 con.query($query, function (err, rows) {
     if (err) throw err;
 
