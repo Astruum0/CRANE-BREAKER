@@ -1,6 +1,5 @@
 const mysql = require('mysql');
-const Store = require('electron-store'), store = new Store();
-const { Sequelize } = require('sequelize');
+const { ipcRenderer } = require('electron');
 
 var con = mysql.createConnection({
     host: "86.234.96.174",
@@ -24,14 +23,19 @@ $scorequery = 'SELECT level_id, level_highscore FROM levels LIMIT 10';
 
 // Récupération high scores
 
-function getHighScores() {
+
+const test = function getHighScores() {
     con.query($scorequery, function (err, rows) {
         if (err) throw err;
 
-        const tab = document.getElementById("tab");
-        const leveln = document.getElementById("levelnbr");
+        ipcRenderer.send('bar', "I did something for you");
 
-        console.log(rows);
+        // const tab = document.getElementById("tab");
+        // tab.innerHTML = '2';
+        // const levelnbr = document.getElementById("levelnbr");
+        // levelnbr.innerHTML = '3';
+
+        // console.log('woohoo', rows);
     });
 };
 
@@ -40,5 +44,3 @@ con.query($query, function (err, rows) {
 
     console.log("Query succesfully executed", rows);
 });
-
-module.exports = isCon = store.get('connected');

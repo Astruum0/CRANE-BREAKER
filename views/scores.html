@@ -7,6 +7,7 @@
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
     <link rel="stylesheet" href="../styles/style.css" />
     <script src="../index.js"></script>
+    <script src="../script/dbconnect.js"></script>
 </head>
 
 <body onload="getHighScores()" class="bg-dark text-white">
@@ -19,7 +20,7 @@
     <h2>Meilleurs scores</h2>
 
     <h3>Affichage des 10 meilleures scores pour le niveau</h3>
-    <p class="levelnbr">1</p>
+    <p id="levelnbr">1</p>
 
     <table>
         <tr>
@@ -28,7 +29,7 @@
             <th>Score</th>
         </tr>
         <tr>
-            <td class="levelnbr">Black</td>
+            <td id="levelnbr">Black</td>
             <td>Vaccine</td>
             <td>21</td>
         </tr>
@@ -38,18 +39,8 @@
             <td>16</td>
         </tr>
     </table>
-
-    <div class="d-flex flex-column gap-2 col-4 mx-auto">
-        <button type="button" class="btn btn-danger btn-lg mb-2 mt-5" onclick="redirection('game.html')"><span
-                style="font-size:xx-large; font-family: Noto Sans">Mode
-                histoire</span></button>
-        <button type="button" class="btn btn-success btn-lg" onclick="redirection('game.html')"><span
-                style="font-size:xx-large; font-family: Noto Sans;">Partie
-                rapide</span></button>
-        <button type="button" class="btn btn-info btn-lg mt-5" onclick="redirection('register.html')"><span
-                style="font-size:xx-large; font-family: Noto Sans">Profil</span></button>
-        <!DOCTYPE html>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.3.1/lib/p5.js"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
         crossorigin="anonymous"></script>
@@ -59,7 +50,6 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>
-    <script src="../script/dbconnect.js"></script>
 </body>
 
 </html>
