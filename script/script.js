@@ -7,8 +7,14 @@ var topLeftX, topLeftY, topRightX, topRightY;
 var screenWidth = window.screen.width;
 var screenHeight = window.screen.height;
 
+sidePadding = 100;
+
+gameWidth = screenWidth - sidePadding * 2;
+
 var player;
 var ball;
+
+var bricks = [];
 
 var start = false;
 
@@ -45,6 +51,12 @@ function setup() {
     const canvas = createCanvas(screenWidth, screenHeight);
     canvas.parent("container");
 
+    for (var j = 0; j < 4; j++) {
+        for (var i = sidePadding; i < gameWidth; i += gameWidth / 10) {
+            bricks.push(new Brick(i, j * 50 + 50, gameWidth / 10, 50, true));
+        }
+    }
+
     // Promise.all([
     //     faceapi.nets.tinyFaceDetector.loadFromUri("../models"),
     //     faceapi.nets.faceLandmark68Net.loadFromUri("../models"),
@@ -66,13 +78,17 @@ function draw() {
     noFill();
     stroke(0);
     strokeWeight(8);
-    rect(100, 0, screenWidth - 200, screenHeight);
+    rect(sidePadding, 0, screenWidth - sidePadding * 2, screenHeight);
     background(0, 200);
 
-    if (start) ball.update(player);
+    if (start) ball.update(player, bricks);
 
     player.update(mouseX, mouseY);
 
     player.show();
     ball.show();
+
+    for (var i = 0; i < bricks.length; i++) {
+        bricks[i].show();
+    }
 }

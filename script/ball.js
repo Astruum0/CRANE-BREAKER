@@ -23,21 +23,7 @@ class Ball {
         this.pos.y = pad.y - this.r;
     }
 
-    update(pad) {
-        // if (
-        //     this.hit == false &&
-        //     this.pos.x + this.r >= pad.x - pad.width / 2 &&
-        //     this.pos.x - this.r <= pad.x + pad.width / 2 &&
-        //     this.pos.y + this.r >= pad.y &&
-        //     this.pos.y - this.r <= pad.y + pad.height / 2
-        // ) {
-        //     this.hit = true;
-        //     this.vel.y *= -0.95;
-        //     this.vel.y += pad.direction.y * 0.1;
-        //     this.vel.x += pad.direction.x * 0.1;
-        // } else {
-        //     this.hit = false;
-        // }
+    update(pad, bricks) {
         for (var i = -1; i < 2; i += 2) {
             if (pointInPolygon([this.pos.x + this.r * i, this.pos.y], pad.hitbox)) {
                 this.bounce(pad);
@@ -63,6 +49,39 @@ class Ball {
         if (this.pos.y - this.r / 2 <= 0) {
             this.vel.y *= -0.95;
             this.pos.y = this.r / 2;
+        }
+
+        let brickIndex = this.intersectWithBrick(bricks);
+        if (brickIndex != undefined) {
+            bricks.splice(brickIndex, 1);
+        }
+    }
+
+    intersectWithBrick(bricks) {
+        for (var i = 0; i < bricks.length; i++) {
+            let brick = {
+                x1: bricks[i].x,
+                y1: bricks[i].y,
+                x2: bricks[i].x + bricks[i].w,
+                y2: bricks[i].y + bricks[i].h,
+            };
+            if (
+                this.pos.x >= brick.x1 &&
+                this.pos.x <= brick.x2 &&
+                ((this.pos.y - this.r <= brick.y1 && this.pos.y + this.r >= brick.y1) ||
+                    (this.pos.y - this.r <= brick.y2 && this.pos.y + this.r >= brick.y2))
+            ) {
+                this.vel.y *= -1;
+                return i;
+            } else if (
+                this.pos.y >= brick.y1 &&
+                this.pos.y <= brick.y2 &&
+                ((this.pos.x - this.r <= brick.x1 && this.pos.x + this.r >= brick.x1) ||
+                    (this.pos.x - this.r <= brick.x2 && this.pos.x + this.r >= brick.x2))
+            ) {
+                this.vel.x *= -1;
+                return i;
+            }
         }
     }
 
