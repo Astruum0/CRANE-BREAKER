@@ -1,9 +1,7 @@
 const electron = require("electron");
 const url = require("url");
 const path = require("path");
-
-const nodeConsole = require('console');
-const myConsole = new nodeConsole.Console(process.stdout, process.stderr);
+const db = require("./script/preload")
 
 const { app, BrowserWindow } = electron;
 
@@ -16,7 +14,7 @@ function redirection(link) {
 
 app.on("ready", async () => {
     timerWindow = new BrowserWindow({
-        titleBarStyle: "hidden", minWidth: 600, minHeight: 800, icon: 'img/appicon.ico',
+        titleBarStyle: "hidden", minWidth: 600, minHeight: 800, icon: 'img/appicon.ico'
     });
 
     timerWindow.loadURL(
@@ -31,8 +29,3 @@ app.on("ready", async () => {
     timerWindow.removeMenu();
     timerWindow.maximize();
 });
-
-app.on('bar', (event, arg) => {
-    console.log("woohoo")  // prints "I did something for you"
-    event.sender.send('foo', 'done') // You can also send a message like that
-})
