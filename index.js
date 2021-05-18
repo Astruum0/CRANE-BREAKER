@@ -8,13 +8,12 @@ const { app, BrowserWindow } = electron;
 let timerWindow;
 let settingsWindow;
 
-function redirection(link) {
-    window.location.replace(link);
-}
-
 app.on("ready", async () => {
     timerWindow = new BrowserWindow({
-        titleBarStyle: "hidden", minWidth: 600, minHeight: 800, icon: 'img/appicon.ico'
+        titleBarStyle: "hidden", minWidth: 600, minHeight: 800, icon: 'img/appicon.ico', webPreferences: {
+            nodeIntegration: true,
+            contextIsolation: false,
+        }
     });
 
     timerWindow.loadURL(
@@ -24,7 +23,6 @@ app.on("ready", async () => {
             slashes: true,
         })
     );
-
 
     timerWindow.removeMenu();
     timerWindow.maximize();
