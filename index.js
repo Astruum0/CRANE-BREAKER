@@ -1,8 +1,10 @@
+// Basic imports
 const electron = require("electron");
 const url = require("url");
 const path = require("path");
 const db = require("./script/preload")
 const reg = require("./script/register")
+const { ipcMain } = require('electron')
 // const log = require("./script/login")
 var express = require('express');
 var session = require('express-session');
@@ -17,7 +19,7 @@ let settingsWindow;
 app.on("ready", async () => {
     timerWindow = new BrowserWindow({
         titleBarStyle: "hidden", minWidth: 600, minHeight: 800, icon: 'img/appicon.ico', webPreferences: {
-            nodeIntegration: true,
+            nodeIntegration: true, // NECESSARY ! FOR NODE REQUIRE
             contextIsolation: false,
         }
     });
@@ -29,6 +31,10 @@ app.on("ready", async () => {
             slashes: true,
         })
     );
+
+    ipcMain.on('close-me', (evt, arg) => {
+        app.quit()
+    })
 
     // timerWindow.openDevTools();
     timerWindow.removeMenu();

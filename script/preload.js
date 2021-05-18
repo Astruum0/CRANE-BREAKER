@@ -1,3 +1,4 @@
+// Basic imports
 const mysql = require('mysql');
 const Store = require('electron-store');
 const store = new Store();
@@ -11,6 +12,7 @@ const userquery = 'SELECT * FROM `user` LIMIT 10';
 const scorequery = 'SELECT * FROM `scores` LIMIT 10';
 const maxplayersquery = "SELECT COUNT(user_id) AS 'countresult' FROM `scores`"
 
+// BDD Connect options
 con = mysql.createConnection({
     host: "86.234.96.174",
     user: "user",
@@ -24,6 +26,7 @@ con.connect(function (err) {
     store.set('connected', 'true');
 });
 
+// Function to get scores and display them in scores.html
 function getScores() {
     con.query(userquery, function (err, result) {
         if (err) throw err;
@@ -46,13 +49,14 @@ function getScores() {
     // Récupération high scores
     con.query(scorequery, function (err, result) {
         if (err) throw err;
-        // get the reference for the body
-        var body = document.getElementsByTagName("body")[0];
+        var divcontainer = document.getElementById("centercontainer");
 
         var tbl = document.createElement("table");
-        tbl.classList.add("text-center");
+        tbl.classList.add("table");
+        tbl.classList.add("table-dark");
+        tbl.classList.add("col-lg-auto");
         var tblhead = document.createElement("thead");
-        body.appendChild(tbl);
+        divcontainer.appendChild(tbl);
 
         // Header tableau
         var trhead = document.createElement("tr");
@@ -78,7 +82,6 @@ function getScores() {
 
         tbl.appendChild(tblBody);
         tbl.appendChild(tblhead);
-        tbl.setAttribute("border", "2");
 
         Object.keys(result).forEach(function (key) {
             const scoreresult = result[key];
@@ -99,10 +102,18 @@ function getScores() {
             tblBody.appendChild(trrow);
         });
 
-        console.log("Query succesfully executed", result);
+        // Bouton retour
+        var backbutton = document.createElement("a");
+        backbutton.innerText = "Retour";
+        backbutton.href = "index.html";
+        backbutton.classList.add("btn");
+        backbutton.classList.add("btn-info");
+        backbutton.classList.add("col-4");
+        divcontainer.appendChild(backbutton);
     });
 }
 
+// Fonction future pour afficher le nom d'utilisateur connecté
 function displayUsername() {
     var element = document.getElementById("welcome");
     if (isCon == 'true') {

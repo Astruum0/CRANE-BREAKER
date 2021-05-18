@@ -14,13 +14,13 @@
 </style>
 
 <body>
+    <!-- Lecture video adaptée à la taille de l'écran -->
     <video width="1280" height="720" id="video" autoplay>
         <source src="../img/intro.mp4" type="video/mp4" />
-        Your browser does not support the video tag.
-        <!-- Text to be shown incase browser doesnt support html5 -->
     </video>
 
     <script>
+        // Get taille écran
         const video = document.getElementById("video");
         video.width = window.screen.width;
         video.height = window.screen.height;

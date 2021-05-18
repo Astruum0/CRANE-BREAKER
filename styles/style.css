@@ -32,6 +32,11 @@ canvas {
     font-family: Noto Sans;
 }
 
+#closeApp {
+    font-size:large; 
+    font-family: Noto Sans;
+}
+
 img.vert-move {
     -webkit-animation: mover 1s infinite  alternate;
     animation: mover 1s infinite  alternate;
@@ -51,4 +56,9 @@ img.vert-move {
 
 #titleText {
     font-family: 'Zen Dots', cursive;
+}
+
+a, a:hover, a:focus, a:active {
+    text-decoration: none;
+    color: inherit;
 }

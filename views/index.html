@@ -17,6 +17,7 @@
         </h1>
     </div>
 
+    <!-- Affichage username si connecté, autrement invisible -->
     <div id="welcome" class="invisible">
         <p>Bonjour, user !</p>
     </div>
@@ -24,7 +25,8 @@
     <div class="d-flex flex-column gap-5 col-lg-4 mx-auto">
         <a href="game.html" class="btn btn-success btn-lg btnmenu">Jouer</a>
         <a href="register.html" class="btn btn-primary btn-lg mb-2 mt-5 btnmenu">Profil</a>
-        <a href="scores.html" class="btn btn-info btn-lg btnmenu">Scores</a>
+        <a href="scores.html" class="btn btn-info btn-lg btnmenu mb-4">Scores</a>
+        <button id="closeApp" class="btn btn-danger btn-sm col-4 mx-auto">Quitter</a>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/p5@1.3.1/lib/p5.js"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
@@ -37,6 +39,15 @@
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>
     <script src="../script/preload.js"></script>
+
+    <script>
+        // Fonction pour quitter le jeu
+        const { ipcRenderer } = require('electron');
+        const closeApp = document.getElementById('closeApp');
+        closeApp.addEventListener('click', () => {
+            ipcRenderer.send('close-me')
+        });
+    </script>
 </body>
 
 </html>
