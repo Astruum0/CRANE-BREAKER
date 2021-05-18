@@ -4,12 +4,12 @@ const store = new Store();
 
 // Vars
 const isCon = store.get('connected');
+var maxplayerresult;
 
 // Querys
 const userquery = 'SELECT * FROM `user` LIMIT 10';
 const scorequery = 'SELECT * FROM `scores` LIMIT 10';
 const maxplayersquery = "SELECT COUNT(user_id) AS 'countresult' FROM `scores`"
-var maxconsoleresult;
 
 con = mysql.createConnection({
     host: "86.234.96.174",
@@ -30,7 +30,7 @@ function getScores() {
 
         Object.keys(result).forEach(function (key) {
             let row = result[key];
-            maxconsoleresult = row.countresult;
+            maxplayerresult = row.countresult;
         });
     });
 
@@ -41,45 +41,56 @@ function getScores() {
         var body = document.getElementsByTagName("body")[0];
 
         var tbl = document.createElement("table");
+        tbl.classList.add("text-center");
+        var tblhead = document.createElement("thead");
+        body.appendChild(tbl);
+
+        // Header tableau
+        var trhead = document.createElement("tr");
+
+        var th1 = document.createElement("th");
+        var thjoueur = document.createTextNode("Joueur");
+        th1.appendChild(thjoueur);
+
+        var th2 = document.createElement("th");
+        var thlvl = document.createTextNode("Score total");
+        th2.appendChild(thlvl);
+
+        var th3 = document.createElement("th");
+        var th5best = document.createTextNode("5 meilleures parties");
+        th3.appendChild(th5best);
+
+        tblhead.appendChild(th1);
+        tblhead.appendChild(th2);
+        tblhead.appendChild(th3);
+        //
+
         var tblBody = document.createElement("tbody");
+        var trrow = document.createElement("tr");
+        tblBody.appendChild(trrow);
+        tbl.appendChild(tblBody);
+        tbl.appendChild(tblhead);
+        tbl.setAttribute("border", "2");
 
         Object.keys(result).forEach(function (key) {
             const scoreresult = result[key];
-            // creating all cells
-            for (var i = 0; i < maxconsoleresult; i++) {
-                // creates a table row
-                var row = document.createElement("tr");
 
-                for (var j = 0; j < maxconsoleresult; j++) {
-                    // Create a <td> element and a text node, make the text
-                    // node the contents of the <td>, and put the <td> at
-                    // the end of the table row
-                    var cell = document.createElement("td");
-                    var cellText = document.createTextNode(scoreresult.total_score);
-                    cell.appendChild(cellText);
-                    row.appendChild(cell);
-                }
+            var td1 = document.createElement("td");
+            var td2 = document.createElement("td");
+            var td3 = document.createElement("td");
+            var text1 = document.createTextNode(scoreresult.user_id.username);
+            var text2 = document.createTextNode(scoreresult.total_score);
+            var text3 = document.createTextNode(scoreresult.best5_score);
+            td1.appendChild(text1);
+            td2.appendChild(text2);
+            td3.appendChild(text3);
+            trrow.appendChild(td1);
+            trrow.appendChild(td2);
+            trrow.appendChild(td3);
+        });
 
-                // add the row to the end of the table body
-                tblBody.appendChild(row);
-            }
-            // var teste = document.getElementById("user_total_score");
-            // teste.innerHTML = scoreresult.total_score;
-            // console.log(scoreresult.total_score);
-        })
-
-        // put the <tbody> in the <table>
-        tbl.appendChild(tblBody);
-        // appends <table> into <body>
-        body.appendChild(tbl);
-        // sets the border attribute of tbl to 2;
-        tbl.setAttribute("border", "2");
         console.log("Query succesfully executed", result);
     });
-
-    // Vars
-    // var teste = document.getElementById("user_total_score");
-    // teste.innerHTML = isCon;
 }
 
 function displayUsername() {
