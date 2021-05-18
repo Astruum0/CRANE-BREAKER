@@ -25,6 +25,15 @@ con.connect(function (err) {
 });
 
 function getScores() {
+    con.query(userquery, function (err, result) {
+        if (err) throw err;
+
+        Object.keys(result).forEach(function (key) {
+            let row = result[key];
+            usernbr = row.username;
+        });
+    });
+
     con.query(maxplayersquery, function (err, result) {
         if (err) throw err;
 
@@ -66,19 +75,19 @@ function getScores() {
         //
 
         var tblBody = document.createElement("tbody");
-        var trrow = document.createElement("tr");
-        tblBody.appendChild(trrow);
+
         tbl.appendChild(tblBody);
         tbl.appendChild(tblhead);
         tbl.setAttribute("border", "2");
 
         Object.keys(result).forEach(function (key) {
             const scoreresult = result[key];
+            var trrow = document.createElement("tr");
 
             var td1 = document.createElement("td");
             var td2 = document.createElement("td");
             var td3 = document.createElement("td");
-            var text1 = document.createTextNode(scoreresult.user_id.username);
+            var text1 = document.createTextNode(scoreresult.username);
             var text2 = document.createTextNode(scoreresult.total_score);
             var text3 = document.createTextNode(scoreresult.best5_score);
             td1.appendChild(text1);
@@ -87,6 +96,7 @@ function getScores() {
             trrow.appendChild(td1);
             trrow.appendChild(td2);
             trrow.appendChild(td3);
+            tblBody.appendChild(trrow);
         });
 
         console.log("Query succesfully executed", result);

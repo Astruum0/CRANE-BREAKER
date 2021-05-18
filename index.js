@@ -22,19 +22,15 @@ app.on("ready", async () => {
         }
     });
 
-    // net.request.on('login', (authInfo, callback) => {
-    //     callback('username', 'password')
-    // })
-
     timerWindow.loadURL(
         url.format({
-            pathname: path.join(__dirname, "views", "scores.html"),
+            pathname: path.join(__dirname, "views", "intro.html"),
             protocol: "file",
             slashes: true,
         })
     );
 
-    timerWindow.openDevTools();
+    // timerWindow.openDevTools();
     timerWindow.removeMenu();
     timerWindow.maximize();
 });
