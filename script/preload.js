@@ -4,13 +4,12 @@ const store = new Store();
 
 // Vars
 const isCon = store.get('connected');
-console.log(isCon);
 
 // Querys
 const userquery = 'SELECT * FROM `user` LIMIT 10';
 const scorequery = 'SELECT * FROM `scores` LIMIT 10';
-let scoreresult;
-let con;
+const maxplayersquery = "SELECT COUNT(user_id) AS 'countresult' FROM `scores`"
+var maxconsoleresult;
 
 con = mysql.createConnection({
     host: "86.234.96.174",
@@ -23,10 +22,18 @@ con = mysql.createConnection({
 con.connect(function (err) {
     if (err) throw err;
     store.set('connected', 'true');
-    console.log("connecté bddd");
 });
 
 function getScores() {
+    con.query(maxplayersquery, function (err, result) {
+        if (err) throw err;
+
+        Object.keys(result).forEach(function (key) {
+            let row = result[key];
+            maxconsoleresult = row.countresult;
+        });
+    });
+
     // Récupération high scores
     con.query(scorequery, function (err, result) {
         if (err) throw err;
@@ -37,13 +44,13 @@ function getScores() {
         var tblBody = document.createElement("tbody");
 
         Object.keys(result).forEach(function (key) {
-            scoreresult = result[key];
+            const scoreresult = result[key];
             // creating all cells
-            for (var i = 0; i < 10; i++) {
+            for (var i = 0; i < maxconsoleresult; i++) {
                 // creates a table row
                 var row = document.createElement("tr");
 
-                for (var j = 0; j < 10; j++) {
+                for (var j = 0; j < maxconsoleresult; j++) {
                     // Create a <td> element and a text node, make the text
                     // node the contents of the <td>, and put the <td> at
                     // the end of the table row
