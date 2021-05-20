@@ -6,19 +6,10 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
     <link rel="stylesheet" href="../styles/style.css" />
-    <script>
-        const { myConsole } = require('../index.js');
-        console.log(myConsole);
-        if (isCon == 'true') {
-            true;
-        } else {
-            redirection('login.html');
-        }
-        window.location.replace('register.html');
-    </script>
+    <script src="../script/preload.js"></script>
 </head>
 
-<body class="bg-dark text-white">
+<body onload="checkSession()" class="bg-dark text-white">
     <div class="container text-center">
         <img class="vert-move" src="../img/logo.svg" alt="CraneBreaker logo" width="300" />
         <h1 id="titleText">CRANE BREAKER

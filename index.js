@@ -21,7 +21,7 @@ app.on("ready", async () => {
 
     timerWindow.loadURL(
         url.format({
-            pathname: path.join(__dirname, "views", "register.html"),
+            pathname: path.join(__dirname, "views", "intro.html"),
             protocol: "file",
             slashes: true,
         })
@@ -32,7 +32,7 @@ app.on("ready", async () => {
     })
 
 
-    timerWindow.openDevTools();
+    // timerWindow.openDevTools();
     timerWindow.removeMenu();
     timerWindow.maximize();
 });

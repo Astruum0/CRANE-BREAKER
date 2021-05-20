@@ -28,6 +28,15 @@ con.connect(function (err) {
     if (err) throw err;
 });
 
+// Check if session exists
+function checkSession() {
+    if (isCon == 'true') {
+        true;
+    } else {
+        window.location.replace("login.html");
+    }
+}
+
 // Function to get scores and display them in scores.html
 function getScores() {
     con.query(userquery, function (err, result) {
@@ -149,6 +158,7 @@ function loginForm(event) {
         if (result.length) {
             alert("Vous êtes connecté !")
             store.set('connected', 'true');
+            window.location.replace("index.html");
         } else {
             alert("Nom d'utilisateur ou mot de passe incorrect")
         }
@@ -162,25 +172,44 @@ function registerForm(event) {
     let username = document.getElementById("username").value;
     let email = document.getElementById("email").value;
     let password = document.getElementById("password").value;
-    let registerquery = "INSERT INTO user (username, email, password) VALUES ('" + username + "', '" + email + "', '" + password + "')"
-    let checkquery = "SELECT username, email FROM user WHERE username = '" + username + "' OR email = '" + email + "'";
+    let passwordConfirm = document.getElementById("passwordConfirm").value;
 
     // Hash password
     const hashedpass = bcrypt.hashSync(password, saltRounds);
     console.log(hashedpass);
 
-    con.query(checkquery, function (err, result) {
-        if (err) throw err;
+    // Querys
+    let registerquery = "INSERT INTO user (username, email, password) VALUES ('" + username + "', '" + email + "', '" + hashedpass + "')"
+    let checkquery = "SELECT username, email FROM user WHERE username = '" + username + "' OR email = '" + email + "'";
 
-        if (result.length) {
-            alert("Erreur : Un utilisateur avec ce pseudo ou cette adresse mail existe déjà");
-        } else {
+    // Check les deux password
+    if (password != passwordConfirm) {
+        alert("Les deux mots de passes ne correspondent pas");
+        return Error1
+    }
 
-            con.query(registerquery, function (err, result) {
-                if (err) throw err;
+    // Check longueur password
+    else if (password.length < 8) {
+        alert("Le mot de passe doit faire au moins 8 caractères")
+        return Error2
+    } else {
 
-                alert("Utilisateur enregistré !")
-            });
-        }
-    });
+        // Check si un utilisateur existe déjà
+        con.query(checkquery, function (err, result) {
+            if (err) throw err;
+
+            if (result.length) {
+                alert("Erreur : Un utilisateur avec ce pseudo ou cette adresse mail existe déjà");
+            } else {
+
+                // Register dans la BDD
+                con.query(registerquery, function (err, result) {
+                    if (err) throw err;
+
+                    alert("Utilisateur enregistré !")
+                    window.location.replace("index.html");
+                });
+            }
+        });
+    }
 }
