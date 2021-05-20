@@ -2,6 +2,9 @@
 const mysql = require('mysql');
 const Store = require('electron-store');
 const store = new Store();
+const ipcRenderer = require('electron').ipcRenderer;
+var bcrypt = require('bcrypt');
+const saltRounds = 10;
 
 // Vars
 const isCon = store.get('connected');
@@ -23,7 +26,6 @@ con = mysql.createConnection({
 // Connexion à la BDD
 con.connect(function (err) {
     if (err) throw err;
-    store.set('connected', 'true');
 });
 
 // Function to get scores and display them in scores.html
@@ -121,4 +123,64 @@ function displayUsername() {
     } else {
         element.classList.add("col-4");
     }
+}
+
+// Fonction pour quitter le jeu
+function closeApp() {
+    ipcRenderer.send('close-me')
+}
+
+// Fonction de Login
+function loginForm(event) {
+    event.preventDefault() // stop the form from submitting
+
+    let username = document.getElementById("username").value;
+    let password = document.getElementById("password").value;
+
+    // Hash password
+    const hashedpass = bcrypt.hashSync(password, saltRounds);
+    console.log(hashedpass);
+
+    let loginquery = "SELECT username, password FROM user WHERE username = '" + username + "' AND password = '" + hashedpass + "'";
+
+    con.query(loginquery, function (err, result) {
+        if (err) throw err;
+
+        if (result.length) {
+            alert("Vous êtes connecté !")
+            store.set('connected', 'true');
+        } else {
+            alert("Nom d'utilisateur ou mot de passe incorrect")
+        }
+    });
+}
+
+// Fonction de register
+function registerForm(event) {
+    event.preventDefault() // stop the form from submitting
+
+    let username = document.getElementById("username").value;
+    let email = document.getElementById("email").value;
+    let password = document.getElementById("password").value;
+    let registerquery = "INSERT INTO user (username, email, password) VALUES ('" + username + "', '" + email + "', '" + password + "')"
+    let checkquery = "SELECT username, email FROM user WHERE username = '" + username + "' OR email = '" + email + "'";
+
+    // Hash password
+    const hashedpass = bcrypt.hashSync(password, saltRounds);
+    console.log(hashedpass);
+
+    con.query(checkquery, function (err, result) {
+        if (err) throw err;
+
+        if (result.length) {
+            alert("Erreur : Un utilisateur avec ce pseudo ou cette adresse mail existe déjà");
+        } else {
+
+            con.query(registerquery, function (err, result) {
+                if (err) throw err;
+
+                alert("Utilisateur enregistré !")
+            });
+        }
+    });
 }

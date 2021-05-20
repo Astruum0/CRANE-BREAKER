@@ -2,14 +2,9 @@
 const electron = require("electron");
 const url = require("url");
 const path = require("path");
-const db = require("./script/preload")
-const reg = require("./script/register")
-const { ipcMain } = require('electron')
-// const log = require("./script/login")
-var express = require('express');
-var session = require('express-session');
+const db = require("./script/preload");
+const { ipcMain } = require('electron');
 const { net } = require('electron');
-
 
 const { app, BrowserWindow } = electron;
 
@@ -26,7 +21,7 @@ app.on("ready", async () => {
 
     timerWindow.loadURL(
         url.format({
-            pathname: path.join(__dirname, "views", "intro.html"),
+            pathname: path.join(__dirname, "views", "register.html"),
             protocol: "file",
             slashes: true,
         })
@@ -36,7 +31,12 @@ app.on("ready", async () => {
         app.quit()
     })
 
-    // timerWindow.openDevTools();
+
+    timerWindow.openDevTools();
     timerWindow.removeMenu();
     timerWindow.maximize();
+});
+
+ipcMain.on('login-submission', function (event, username, password) {
+    console.log("this is the firstname from the form ->", username, password)
 });

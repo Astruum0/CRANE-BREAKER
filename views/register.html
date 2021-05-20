@@ -7,7 +7,7 @@
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
     <link rel="stylesheet" href="../styles/style.css" />
     <script src="../index.js"></script>
-    <script src="../script/register.js"></script>
+    <script src="../script/preload.js"></script>
 </head>
 
 <body class="bg-dark text-white">
@@ -18,9 +18,9 @@
         </a>
         </h1>
 
-        <h2>Inscrivez-vous dès maintenant pour sauvegarder votre progression, voir les high-score, et plus !</h2>
+        <h2>Inscrivez-vous dès maintenant pour sauvegarder votre progression, voir vos high-score, et plus !</h2>
 
-        <form action="registering" method="POST">
+        <form onSubmit="JavaScript:registerForm(event)">
             <div class="form-group d-flex flex-column gap-2 col-4 mx-auto">
                 <label for="username">Nom d'utilisateur</label>
                 <input type="username" class="form-control" id="username" aria-describedby="username"
@@ -55,9 +55,6 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>
-    <script src="../script/dbconnect.js"></script>
-
-    <script></script>
 </body>
 
 </html>
