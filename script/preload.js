@@ -266,17 +266,14 @@ function editForm(event) {
     let oldpassword = document.getElementById("oldpassword").value;
     let newpassword = document.getElementById("newpassword").value;
 
-    document.getElementById("username").value = store.get('username');
-    document.getElementById("email").value = store.get('email');
-
     // Hash password
     const salt = bcrypt.genSaltSync(saltRounds);
-    const hashedoldpass = bcrypt.hashSync(oldpassword, salt);
     const hashednewpass = bcrypt.hashSync(newpassword, salt);
 
     // Check les deux password
     const hashOldCompare = bcrypt.compareSync(oldpassword, store.get('password'));
-    if (hashOldCompare != 'true') {
+
+    if (hashOldCompare != true) {
         alert("L'ancien mot de passe ne correspond pas");
         return Error1
     } else if (newpassword.length < 8) {
@@ -291,7 +288,7 @@ function editForm(event) {
             const checkuserquery = "SELECT username, email FROM user WHERE username = '" + username + "' OR email = '" + email + "'";
 
             // Check si un utilisateur existe déjà
-            con.query(checkquery, function (err, result) {
+            con.query(checkuserquery, function (err, result) {
                 if (err) throw err;
 
                 if (result.length) {
@@ -301,7 +298,7 @@ function editForm(event) {
 
                     // Register dans la BDD
                     function updateInfos() {
-                        const updatequery1 = "UPDATE user SET username = '" + username + "', email '" + email + "', password = '" + hashednewpass + "' WHERE username = '" + store.get('username') + "'";
+                        const updatequery1 = "UPDATE user SET username = '" + username + "', email = '" + email + "', password = '" + hashednewpass + "' WHERE username = '" + store.get('username') + "'";
                         const updatequery2 = "UPDATE scores SET username = '" + username + "' WHERE username = '" + store.get('username') + "'";
 
                         // Edit local
@@ -320,6 +317,7 @@ function editForm(event) {
                             });
                         });
                     }
+                    updateInfos();
                 }
             });
         }
