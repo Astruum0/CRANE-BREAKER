@@ -8,12 +8,13 @@ const saltRounds = 10;
 
 // Vars
 const isCon = store.get('connected');
+// store.set('connected', 'false')
 var maxplayerresult;
 
 // Querys
 const userquery = 'SELECT * FROM `user` LIMIT 10';
 const scorequery = 'SELECT * FROM `scores` LIMIT 10';
-const maxplayersquery = "SELECT COUNT(user_id) AS 'countresult' FROM `scores`"
+const maxplayersquery = "SELECT COUNT(user_id) AS 'countresult' FROM `scores`";
 
 // BDD Connect options
 con = mysql.createConnection({
@@ -31,10 +32,35 @@ con.connect(function (err) {
 // Check if session exists
 function checkSession() {
     if (isCon == 'true') {
-        true;
+        loadInfos();
     } else {
         window.location.replace("login.html");
     }
+}
+
+function loadInfos() {
+    const getUsername = store.get('username');
+    document.getElementById("username").innerText = getUsername;
+    const getEmail = store.get('email');
+    document.getElementById("email").innerText = getEmail;
+
+    // Get scores
+    const getUserScores = "SELECT total_score, best5_score FROM scores WHERE username = '" + getUsername + "'";
+    con.query(getUserScores, function (err, result) {
+        if (err) throw err;
+
+        if (!result.length) {
+            store.set('total_score', "Vous n'avez aucun score total. Jouez maintenant !");
+            store.set('best5', "Vous n'avez aucun meilleur score de 5. Jouez maintenant !");
+        }
+        store.set('total_score', result[0].total_score);
+        store.set('best5', result[0].best5_score);
+    });
+
+    const getTotalScore = store.get('total_score');
+    document.getElementById("total_score").innerText = getTotalScore;
+    const getBest5 = store.get('best5');
+    document.getElementById("best_of_5").innerText = getBest5;
 }
 
 // Function to get scores and display them in scores.html
@@ -127,10 +153,13 @@ function getScores() {
 // Fonction future pour afficher le nom d'utilisateur connecté
 function displayUsername() {
     var element = document.getElementById("welcome");
+    var getUserDiv = document.getElementById("user");
     if (isCon == 'true') {
+        const userinfoUsername = store.get('username')
         element.classList.remove("invisible");
+        getUserDiv.innerText = userinfoUsername;
     } else {
-        element.classList.add("col-4");
+        false;
     }
 }
 
@@ -146,7 +175,7 @@ function loginForm(event) {
     let username = document.getElementById("username").value;
     let password = document.getElementById("password").value;
 
-    let loginquery = "SELECT username, password FROM user WHERE username = '" + username + "'";
+    let loginquery = "SELECT username, password, email FROM user WHERE username = '" + username + "'";
 
     con.query(loginquery, function (err, result) {
         if (err) throw err;
@@ -160,9 +189,13 @@ function loginForm(event) {
             const hashCompare = bcrypt.compareSync(password, result[0].password); // true
             console.log(hashCompare);
 
+            email = result[0].email;
+
             if (hashCompare == true) {
                 alert("Vous êtes connecté !")
                 store.set('connected', 'true');
+                store.set('username', username)
+                store.set('email', email)
                 window.location.replace("index.html");
             } else {
                 alert("Nom d'utilisateur ou mot de passe incorrect")
