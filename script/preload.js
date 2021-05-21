@@ -146,21 +146,27 @@ function loginForm(event) {
     let username = document.getElementById("username").value;
     let password = document.getElementById("password").value;
 
-    // Hash password
-    const hashedpass = bcrypt.hashSync(password, saltRounds);
-    console.log(hashedpass);
-
-    let loginquery = "SELECT username, password FROM user WHERE username = '" + username + "' AND password = '" + hashedpass + "'";
+    let loginquery = "SELECT username, password FROM user WHERE username = '" + username + "'";
 
     con.query(loginquery, function (err, result) {
         if (err) throw err;
 
-        if (result.length) {
-            alert("Vous êtes connecté !")
-            store.set('connected', 'true');
-            window.location.replace("index.html");
+        // If no user
+        if (!result.length) {
+            alert("Aucun utilisateur trouvé")
         } else {
-            alert("Nom d'utilisateur ou mot de passe incorrect")
+
+            // Compare hash
+            const hashCompare = bcrypt.compareSync(password, result[0].password); // true
+            console.log(hashCompare);
+
+            if (hashCompare == true) {
+                alert("Vous êtes connecté !")
+                store.set('connected', 'true');
+                window.location.replace("index.html");
+            } else {
+                alert("Nom d'utilisateur ou mot de passe incorrect")
+            }
         }
     });
 }
@@ -175,7 +181,8 @@ function registerForm(event) {
     let passwordConfirm = document.getElementById("passwordConfirm").value;
 
     // Hash password
-    const hashedpass = bcrypt.hashSync(password, saltRounds);
+    const salt = bcrypt.genSaltSync(saltRounds);
+    const hashedpass = bcrypt.hashSync(password, salt);
     console.log(hashedpass);
 
     // Querys

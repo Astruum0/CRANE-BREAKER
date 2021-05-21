@@ -32,11 +32,7 @@ app.on("ready", async () => {
     })
 
 
-    // timerWindow.openDevTools();
+    timerWindow.openDevTools();
     timerWindow.removeMenu();
     timerWindow.maximize();
-});
-
-ipcMain.on('login-submission', function (event, username, password) {
-    console.log("this is the firstname from the form ->", username, password)
 });
