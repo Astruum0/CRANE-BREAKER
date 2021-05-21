@@ -49,12 +49,15 @@ function loadInfos() {
     con.query(getUserScores, function (err, result) {
         if (err) throw err;
 
-        if (!result.length) {
-            store.set('total_score', "Vous n'avez aucun score total. Jouez maintenant !");
-            store.set('best5', "Vous n'avez aucun meilleur score de 5. Jouez maintenant !");
-        }
+        const getTotalScore = store.get('total_score');
+        const getBest5 = store.get('best5');
         store.set('total_score', result[0].total_score);
         store.set('best5', result[0].best5_score);
+        if (getTotalScore == 'undefined') {
+            store.set('total_score', "Vous n'avez aucun score total. Jouez maintenant !");
+        } else if (getBest5 == 'undefined') {
+            store.set('best5', "Vous n'avez aucun meilleur score de 5. Jouez maintenant !");
+        }
     });
 
     const getTotalScore = store.get('total_score');
@@ -187,15 +190,16 @@ function loginForm(event) {
 
             // Compare hash
             const hashCompare = bcrypt.compareSync(password, result[0].password); // true
-            console.log(hashCompare);
 
             email = result[0].email;
+            hashed = result[0].password;
 
             if (hashCompare == true) {
                 alert("Vous êtes connecté !")
                 store.set('connected', 'true');
                 store.set('username', username)
                 store.set('email', email)
+                store.set('password', hashed)
                 window.location.replace("index.html");
             } else {
                 alert("Nom d'utilisateur ou mot de passe incorrect")
@@ -216,11 +220,10 @@ function registerForm(event) {
     // Hash password
     const salt = bcrypt.genSaltSync(saltRounds);
     const hashedpass = bcrypt.hashSync(password, salt);
-    console.log(hashedpass);
 
     // Querys
     let registerquery = "INSERT INTO user (username, email, password) VALUES ('" + username + "', '" + email + "', '" + hashedpass + "')"
-    let checkquery = "SELECT username, email FROM user WHERE username = '" + username + "' OR email = '" + email + "'";
+    var checkquery = "SELECT username, email FROM user WHERE username = '" + username + "' OR email = '" + email + "'";
 
     // Check les deux password
     if (password != passwordConfirm) {
@@ -251,5 +254,74 @@ function registerForm(event) {
                 });
             }
         });
+    }
+}
+
+// Fonction d'edit
+function editForm(event) {
+    event.preventDefault() // stop the form from submitting
+
+    let username = document.getElementById("username").value;
+    let email = document.getElementById("email").value;
+    let oldpassword = document.getElementById("oldpassword").value;
+    let newpassword = document.getElementById("newpassword").value;
+
+    document.getElementById("username").value = store.get('username');
+    document.getElementById("email").value = store.get('email');
+
+    // Hash password
+    const salt = bcrypt.genSaltSync(saltRounds);
+    const hashedoldpass = bcrypt.hashSync(oldpassword, salt);
+    const hashednewpass = bcrypt.hashSync(newpassword, salt);
+
+    // Check les deux password
+    const hashOldCompare = bcrypt.compareSync(oldpassword, store.get('password'));
+    if (hashOldCompare != 'true') {
+        alert("L'ancien mot de passe ne correspond pas");
+        return Error1
+    } else if (newpassword.length < 8) {
+        // Check longueur password
+        alert("Le mot de passe doit faire au moins 8 caractères")
+        return Error2
+    } else {
+        // Check si le username ou email est le mếme
+        if (username == store.get('username') && email == store.get('email')) {
+            updateInfos();
+        } else {
+            const checkuserquery = "SELECT username, email FROM user WHERE username = '" + username + "' OR email = '" + email + "'";
+
+            // Check si un utilisateur existe déjà
+            con.query(checkquery, function (err, result) {
+                if (err) throw err;
+
+                if (result.length) {
+                    alert("Erreur : Un utilisateur avec ce pseudo ou cette adresse mail existe déjà");
+                    return Error3
+                } else {
+
+                    // Register dans la BDD
+                    function updateInfos() {
+                        const updatequery1 = "UPDATE user SET username = '" + username + "', email '" + email + "', password = '" + hashednewpass + "' WHERE username = '" + store.get('username') + "'";
+                        const updatequery2 = "UPDATE scores SET username = '" + username + "' WHERE username = '" + store.get('username') + "'";
+
+                        // Edit local
+                        store.set('username', username);
+                        store.set('email', email)
+                        store.set('password', hashednewpass)
+                        con.query(updatequery1, function (err, result) {
+                            if (err) throw err;
+
+                            alert("Modifications effectuées !");
+                            window.location.replace("index.html");
+
+                            con.query(updatequery2, function (err, result) {
+                                if (err) throw err;
+
+                            });
+                        });
+                    }
+                }
+            });
+        }
     }
 }
