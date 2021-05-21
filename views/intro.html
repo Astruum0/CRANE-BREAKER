@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>CRANE BREAKER</title>
+</head>
+
+<style>
+    body {
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
+    }
+</style>
+
+<body>
+    <!-- Lecture video adaptée à la taille de l'écran -->
+    <video width="1280" height="720" id="video" autoplay>
+        <source src="../img/intro.mp4" type="video/mp4" />
+    </video>
+
+    <script>
+        // Get taille écran
+        const video = document.getElementById("video");
+        video.width = window.screen.width;
+        video.height = window.screen.height;
+        setTimeout(function () { window.location.replace("index.html"); }, 2800);
+    </script>
+</body>
+
+</html>
