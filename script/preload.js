@@ -3,12 +3,12 @@ const mysql = require('mysql');
 const Store = require('electron-store');
 const store = new Store();
 const ipcRenderer = require('electron').ipcRenderer;
-var bcrypt = require('bcrypt');
+const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
 // Var
-var isCon = store.get('connected');
-var maxplayerresult;
+const isCon = store.get('connected');
+let maxplayerresult;
 
 // Generateur de hash admin
 // argpass = "";
@@ -20,9 +20,10 @@ var maxplayerresult;
 const userquery = 'SELECT * FROM `user` LIMIT 10';
 const scorequery = 'SELECT * FROM `scores` LIMIT 10';
 const maxplayersquery = "SELECT COUNT(user_id) AS 'countresult' FROM `scores`";
+const adminmaxplayers = "SELECT COUNT(id) AS 'countresult' FROM `user`";
 
 // BDD Connect options
-con = mysql.createConnection({
+const con = mysql.createConnection({
     host: "86.234.96.174",
     user: "user",
     password: "user",
@@ -67,11 +68,98 @@ function checkSession() {
     }
 }
 
+// Function adminManageAll
+function getAllAdmin() {
+    con.query(maxplayersquery, function (err, result) {
+        if (err) throw err;
 
+        Object.keys(result).forEach(function (key) {
+            let row = result[key];
+            maxplayerresult = row.countresult;
+        });
+    });
+
+    // Récupération high scores
+    con.query(userquery, function (err, result) {
+        if (err) throw err;
+
+        var divcontainer = document.getElementById("centercontainer");
+
+        var tbl = document.createElement("table");
+        tbl.classList.add("table");
+        tbl.classList.add("table-dark");
+        tbl.classList.add("col-lg-auto");
+        var tblhead = document.createElement("thead");
+        divcontainer.appendChild(tbl);
+
+        // Header tableau
+        var trhead = document.createElement("tr");
+
+        var th1 = document.createElement("th");
+        var thjoueur = document.createTextNode("Joueur");
+        th1.appendChild(thjoueur);
+
+        var th2 = document.createElement("th");
+        var thmail = document.createTextNode("Adresse e-mail");
+        th2.appendChild(thmail);
+
+        var th3 = document.createElement("th");
+        var theditbtn = document.createTextNode("");
+        th3.appendChild(theditbtn);
+
+        tblhead.appendChild(th1);
+        tblhead.appendChild(th2);
+        tblhead.appendChild(th3);
+        //
+
+        var tblBody = document.createElement("tbody");
+
+        tbl.appendChild(tblBody);
+        tbl.appendChild(tblhead);
+
+        // Declare ID
+        var idinc;
+
+        Object.keys(result).forEach(function (key) {
+            const playerresult = result[key];
+            // ID incrémenté
+            idinc++;
+
+            var trrow = document.createElement("tr");
+
+            var td1 = document.createElement("td");
+            var td2 = document.createElement("td");
+            var td3 = document.createElement("td");
+            var text1 = document.createTextNode(playerresult.username);
+            var text2 = document.createTextNode(playerresult.email);
+            var text3 = document.createElement("a");
+            text3.classList.add("btn");
+            text3.classList.add("btn-primary");
+            text3.href = "adminEdit.html"
+            text3.innerText = "Modifier";
+            td1.appendChild(text1);
+            td2.appendChild(text2);
+            td3.appendChild(text3);
+            trrow.appendChild(td1);
+            trrow.appendChild(td2);
+            trrow.appendChild(td3);
+            tblBody.appendChild(trrow);
+        });
+
+        // Bouton retour
+        var backbutton = document.createElement("a");
+        backbutton.innerText = "Retour";
+        backbutton.href = "index.html";
+        backbutton.classList.add("btn");
+        backbutton.classList.add("btn-light");
+        backbutton.classList.add("col-2");
+        divcontainer.appendChild(backbutton);
+    });
+}
 
 // Function to get scores and display them in scores.html
 function getScores() {
-    con.query(maxplayersquery, function (err, result) {
+    con.query(adminmaxplayers, function (err, result) {
         if (err) throw err;
 
         Object.keys(result).forEach(function (key) {
@@ -372,3 +460,10 @@ function logout() {
     store.delete('best5');
     window.location.replace("index.html");
 }
+
+// Fonction future pour l'update score
+// function scoreUpdate {
+//     const updatescorequery = "UPDATE scores SET total_score = '" + valueTotalScore + "', best5_score = '" + valueBest5 + "'";
+//     // Get Score Value
+
+// }
