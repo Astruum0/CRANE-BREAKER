@@ -6,9 +6,8 @@ const ipcRenderer = require('electron').ipcRenderer;
 var bcrypt = require('bcrypt');
 const saltRounds = 10;
 
-// Vars
-const isCon = store.get('connected');
-// store.set('connected', 'false')
+// Var
+var isCon = store.get('connected');
 var maxplayerresult;
 
 // Querys
@@ -31,40 +30,38 @@ con.connect(function (err) {
 
 // Check if session exists
 function checkSession() {
+    // Check for session
     if (isCon == 'true') {
-        loadInfos();
+        const getUsername = store.get('username');
+        document.getElementById("username").innerText = getUsername;
+        const getEmail = store.get('email');
+        document.getElementById("email").innerText = getEmail;
+
+        // Get scores
+        const getUserScores = "SELECT total_score, best5_score FROM scores WHERE username = '" + getUsername + "'";
+        con.query(getUserScores, function (err, result) {
+            if (err) throw err;
+
+            const getTotalScore = store.get('total_score');
+            const getBest5 = store.get('best5');
+            store.set('total_score', result[0].total_score);
+            store.set('best5', result[0].best5_score);
+            if (result[0].total_score == '') {
+                store.set('total_score', "Vous n'avez aucun score total. Jouez maintenant !");
+            } else if (result[0].best5_score == '') {
+                store.set('best5', "Vous n'avez aucun meilleur score de 5. Jouez maintenant !");
+            }
+        });
+
+        const getTotalScore = store.get('total_score');
+        document.getElementById("total_score").innerText = getTotalScore;
+        const getBest5 = store.get('best5');
+        document.getElementById("best_of_5").innerText = getBest5;
     } else {
         window.location.replace("login.html");
     }
 }
 
-function loadInfos() {
-    const getUsername = store.get('username');
-    document.getElementById("username").innerText = getUsername;
-    const getEmail = store.get('email');
-    document.getElementById("email").innerText = getEmail;
-
-    // Get scores
-    const getUserScores = "SELECT total_score, best5_score FROM scores WHERE username = '" + getUsername + "'";
-    con.query(getUserScores, function (err, result) {
-        if (err) throw err;
-
-        const getTotalScore = store.get('total_score');
-        const getBest5 = store.get('best5');
-        store.set('total_score', result[0].total_score);
-        store.set('best5', result[0].best5_score);
-        if (getTotalScore == 'undefined') {
-            store.set('total_score', "Vous n'avez aucun score total. Jouez maintenant !");
-        } else if (getBest5 == 'undefined') {
-            store.set('best5', "Vous n'avez aucun meilleur score de 5. Jouez maintenant !");
-        }
-    });
-
-    const getTotalScore = store.get('total_score');
-    document.getElementById("total_score").innerText = getTotalScore;
-    const getBest5 = store.get('best5');
-    document.getElementById("best_of_5").innerText = getBest5;
-}
 
 // Function to get scores and display them in scores.html
 function getScores() {
@@ -147,22 +144,24 @@ function getScores() {
         backbutton.innerText = "Retour";
         backbutton.href = "index.html";
         backbutton.classList.add("btn");
-        backbutton.classList.add("btn-info");
-        backbutton.classList.add("col-4");
+        backbutton.classList.add("btn-light");
+        backbutton.classList.add("col-2");
         divcontainer.appendChild(backbutton);
     });
 }
 
 // Fonction future pour afficher le nom d'utilisateur connecté
-function displayUsername() {
+function redirectSession() {
     var element = document.getElementById("welcome");
     var getUserDiv = document.getElementById("user");
+    var btnProfile = document.getElementById("buttonProfile");
     if (isCon == 'true') {
         const userinfoUsername = store.get('username')
         element.classList.remove("invisible");
         getUserDiv.innerText = userinfoUsername;
+        btnProfile.href = "profile.html"
     } else {
-        false;
+        btnProfile.href = "login.html"
     }
 }
 
@@ -322,4 +321,15 @@ function editForm(event) {
             });
         }
     }
+}
+
+// Logout
+function logout() {
+    store.set('connected', 'false');
+    store.delete('username');
+    store.delete('password');
+    store.delete('email');
+    store.delete('total_score');
+    store.delete('best5');
+    window.location.replace("index.html");
 }

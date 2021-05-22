@@ -21,7 +21,7 @@ app.on("ready", async () => {
 
     timerWindow.loadURL(
         url.format({
-            pathname: path.join(__dirname, "views", "intro.html"),
+            pathname: path.join(__dirname, "views", "index.html"),
             protocol: "file",
             slashes: true,
         })
