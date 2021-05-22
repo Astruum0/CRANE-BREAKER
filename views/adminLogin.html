@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>CRANE BREAKER - Connexion administrateur</title>
+    <title>CRANE BREAKER - Inscription</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
     <link rel="stylesheet" href="../styles/style.css" />
@@ -19,13 +19,13 @@
         </a>
         </h1>
 
-        <h2>Connexion</h2>
+        <h2>Connexion Admin</h2>
 
-        <form id="form" onSubmit="JavaScript:loginForm(event)">
+        <form id="form" onSubmit="JavaScript:adminLoginForm(event)">
             <div class="form-group d-flex flex-column gap-2 col-4 mx-auto">
-                <label for="username">Nom d'utilisateur</label>
-                <input type="username" class="form-control" id="username" aria-describedby="username"
-                    placeholder="Pseudo" required>
+                <label for="username">Adresse e-mail</label>
+                <input type="email" class="form-control" id="email" aria-describedby="email"
+                    placeholder="Adresse e-mail" required>
             </div>
             <div class="form-group d-flex flex-column gap-2 col-4 mx-auto">
                 <label for="password">Mot de passe</label>
@@ -33,7 +33,6 @@
             </div>
             <input class="btn btn-primary" type="submit" value="Se connecter">
         </form>
-        <a href="register.html" class="btn btn-info mt-4">Créer un compte</a>
         <a href="index.html" class="btn btn-light mt-4">Retour</a>
     </div>
 

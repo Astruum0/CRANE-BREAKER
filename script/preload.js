@@ -10,6 +10,12 @@ const saltRounds = 10;
 var isCon = store.get('connected');
 var maxplayerresult;
 
+// Generateur de hash admin
+// argpass = "";
+// const salt = bcrypt.genSaltSync(saltRounds);
+// const hashedpass = bcrypt.hashSync(argpass, salt);
+// console.log(hashedpass);
+
 // Querys
 const userquery = 'SELECT * FROM `user` LIMIT 10';
 const scorequery = 'SELECT * FROM `scores` LIMIT 10';
@@ -41,21 +47,20 @@ function checkSession() {
         const getUserScores = "SELECT total_score, best5_score FROM scores WHERE username = '" + getUsername + "'";
         con.query(getUserScores, function (err, result) {
             if (err) throw err;
-
-            const getTotalScore = store.get('total_score');
-            const getBest5 = store.get('best5');
-            store.set('total_score', result[0].total_score);
-            store.set('best5', result[0].best5_score);
-            if (result[0].total_score == '') {
-                store.set('total_score', "Vous n'avez aucun score total. Jouez maintenant !");
-            } else if (result[0].best5_score == '') {
-                store.set('best5', "Vous n'avez aucun meilleur score de 5. Jouez maintenant !");
-            }
+            console.log(result[0])
         });
 
-        const getTotalScore = store.get('total_score');
+        var getTotalScore = store.get('total_score');
+        var getBest5 = store.get('best5');
+        if (result[0].total_score == 'undefined' || result[0].best5_score == 'undefined') {
+            store.set('total_score', "Vous n'avez aucun score total. Jouez maintenant !");
+            store.set('best5', "Vous n'avez aucun meilleur score de 5. Jouez maintenant !");
+        } else {
+            store.set('total_score', result[0].total_score);
+            store.set('best5', result[0].best5_score);
+        }
+
         document.getElementById("total_score").innerText = getTotalScore;
-        const getBest5 = store.get('best5');
         document.getElementById("best_of_5").innerText = getBest5;
     } else {
         window.location.replace("login.html");
@@ -63,17 +68,9 @@ function checkSession() {
 }
 
 
+
 // Function to get scores and display them in scores.html
 function getScores() {
-    con.query(userquery, function (err, result) {
-        if (err) throw err;
-
-        Object.keys(result).forEach(function (key) {
-            let row = result[key];
-            usernbr = row.username;
-        });
-    });
-
     con.query(maxplayersquery, function (err, result) {
         if (err) throw err;
 
@@ -155,6 +152,7 @@ function redirectSession() {
     var element = document.getElementById("welcome");
     var getUserDiv = document.getElementById("user");
     var btnProfile = document.getElementById("buttonProfile");
+    var btnAdmin = document.getElementById("adminAccess");
     if (isCon == 'true') {
         const userinfoUsername = store.get('username')
         element.classList.remove("invisible");
@@ -162,6 +160,13 @@ function redirectSession() {
         btnProfile.href = "profile.html"
     } else {
         btnProfile.href = "login.html"
+    }
+
+    // Check admin session
+    if (store.get('adminSession') == 'true') {
+        btnAdmin.href = "adminPanel.html"
+    } else {
+        btnAdmin.href = "adminLogin.html"
     }
 }
 
@@ -200,6 +205,40 @@ function loginForm(event) {
                 store.set('email', email)
                 store.set('password', hashed)
                 window.location.replace("index.html");
+            } else {
+                alert("Nom d'utilisateur ou mot de passe incorrect")
+            }
+        }
+    });
+}
+
+// Fonction de Login admin
+function adminLoginForm(event) {
+    event.preventDefault() // stop the form from submitting
+
+    let email = document.getElementById("email").value;
+    let password = document.getElementById("password").value;
+
+    let adminloginquery = "SELECT email, password FROM admin WHERE email = '" + email + "'";
+
+    con.query(adminloginquery, function (err, result) {
+        if (err) throw err;
+
+        // If no user
+        if (!result.length) {
+            alert("Aucun utilisateur trouvé")
+        } else {
+
+            // Compare hash
+            const hashCompare = bcrypt.compareSync(password, result[0].password); // true
+
+            email = result[0].email;
+            hashed = result[0].password;
+
+            if (hashCompare == true) {
+                alert("Vous êtes connecté !")
+                store.set('adminSession', 'true');
+                window.location.replace("adminPanel.html");
             } else {
                 alert("Nom d'utilisateur ou mot de passe incorrect")
             }

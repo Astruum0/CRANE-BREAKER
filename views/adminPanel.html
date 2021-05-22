@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>CRANE BREAKER - Accueil</title>
+    <title>CRANE BREAKER - Panel Administrateur</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
     <link rel="stylesheet" href="../styles/style.css" />
@@ -10,39 +10,18 @@
     <meta charset="UTF-8">
 </head>
 
-<body onload=redirectSession() class="bg-dark text-white">
+<body class="bg-dark text-white">
     <div class="container text-center">
         <img class="vert-move" src="../img/logo.svg" alt="CraneBreaker logo" width="300" />
         <h1 id="titleText">CRANE BREAKER
         </h1>
     </div>
 
-    <!-- Affichage username si connecté, autrement invisible -->
-    <div id="welcome" class="d-flex justify-content-center invisible text-center mt-3 mb-4">
-        <p>Bien le bonjour⠀</p>
-        <p class="font-weight-bold" id="user"></p>
-        <p>⠀!</p>
-    </div>
-
     <!-- Menu -->
     <div class="d-flex flex-column align-content-center text-center mx-auto mb-4">
-        <a href="game.html">
-            <img src="../img/play.svg" alt="Play button" height="200em" width="200em">
-            <p id="textJouer">Jouer</p>
-        </a>
+        <p>Placeholder</p>
     </div>
-    <div class="d-flex justify-content-center col-6 mx-auto">
-        <a href="profile.html" id="buttonProfile" class="btn btn-primary mr-5 btnmenu">Profil</a>
-        <a href="scores.html" class="btn btn-info btnmenu">Scores</a>
-    </div>
-    <div class="d-flex justify-content-center mt-3">
-        <button onclick="closeApp()" id="closeApp" class="btn btn-danger text-center"
-            style="height: 40px;">Quitter</button>
-    </div>
-    <div class="d-flex justify-content-center mt-3">
-        <a id="adminAccess" href="adminLogin.html" class="btn btn-warning text-center" style="height: 40px;">Accès
-            administrateur</a>
-    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/p5@1.3.1/lib/p5.js"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
