@@ -51,11 +51,7 @@ function setup() {
     const canvas = createCanvas(screenWidth, screenHeight);
     canvas.parent("container");
 
-    for (var j = 0; j < 4; j++) {
-        for (var i = sidePadding; i < gameWidth; i += gameWidth / 10) {
-            bricks.push(new Brick(i, j * 50 + 50, gameWidth / 10, 50, true));
-        }
-    }
+    bricks = generateLevel(21, 21);
 
     // Promise.all([
     //     faceapi.nets.tinyFaceDetector.loadFromUri("../models"),
@@ -70,6 +66,7 @@ function keyPressed() {
     if (keyCode == 82) {
         start = false;
         ball.reset();
+        bricks = generateLevel(21, 21);
     }
 }
 

@@ -3,7 +3,7 @@ class Pad {
         this.width = screenWidth / 5;
         this.x = width / 2;
         this.y = height / 2;
-        this.height = this.width / 10;
+        this.height = this.width / 20;
         this.direction = createVector(this.x, this.y);
 
         this.hitbox = [
