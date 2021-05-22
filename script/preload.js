@@ -1,58 +1,66 @@
-// Basic imports
+////////////////////////// SETUP ///////////////////////////
+
+// Import all libraries
 const mysql = require('mysql');
 const Store = require('electron-store');
 const store = new Store();
 const ipcRenderer = require('electron').ipcRenderer;
 const bcrypt = require('bcrypt');
+
+// Const declarations
+const isCon = store.get('connected');
+const getUsername = store.get('username');
+const getEmail = store.get('email');
+const getTotalScore = store.get('total_score');
+const getBest5 = store.get('best5');
+
+let maxplayerresult;
 const saltRounds = 10;
 
-// Var
-const isCon = store.get('connected');
-let maxplayerresult;
-
-// Generateur de hash admin
+// Admin hash generator
 // argpass = "";
 // const salt = bcrypt.genSaltSync(saltRounds);
 // const hashedpass = bcrypt.hashSync(argpass, salt);
 // console.log(hashedpass);
 
-// Querys
+// SQL querys
 const userquery = 'SELECT * FROM `user` LIMIT 10';
 const scorequery = 'SELECT * FROM `scores` LIMIT 10';
 const maxplayersquery = "SELECT COUNT(user_id) AS 'countresult' FROM `scores`";
 const adminmaxplayers = "SELECT COUNT(id) AS 'countresult' FROM `user`";
 
-// BDD Connect options
+const getUserScores = "SELECT total_score, best5_score FROM scores WHERE username = '" + getUsername + "'";
+
+
+// BDD connection options
 const con = mysql.createConnection({
-    host: "86.234.96.174",
+    host: "86.234.96.174", // PC at Malgache's home
     user: "user",
     password: "user",
     database: "cranebreaker"
 });
 
-// Connexion à la BDD
+// BDD connection
 con.connect(function (err) {
     if (err) throw err;
 });
 
+////////////////////////////////////////////////////////////////
+
+////////////////////////// FUNCTIONS ///////////////////////////
+
 // Check if session exists
 function checkSession() {
-    // Check for session
     if (isCon == 'true') {
-        const getUsername = store.get('username');
         document.getElementById("username").innerText = getUsername;
-        const getEmail = store.get('email');
         document.getElementById("email").innerText = getEmail;
 
         // Get scores
-        const getUserScores = "SELECT total_score, best5_score FROM scores WHERE username = '" + getUsername + "'";
         con.query(getUserScores, function (err, result) {
             if (err) throw err;
             console.log(result[0])
         });
 
-        var getTotalScore = store.get('total_score');
-        var getBest5 = store.get('best5');
         if (result[0].total_score == 'undefined' || result[0].best5_score == 'undefined') {
             store.set('total_score', "Vous n'avez aucun score total. Jouez maintenant !");
             store.set('best5', "Vous n'avez aucun meilleur score de 5. Jouez maintenant !");
@@ -68,7 +76,7 @@ function checkSession() {
     }
 }
 
-// Function adminManageAll
+// Function to get all admin infos
 function getAllAdmin() {
     con.query(maxplayersquery, function (err, result) {
         if (err) throw err;
@@ -79,32 +87,31 @@ function getAllAdmin() {
         });
     });
 
-    // Récupération high scores
     con.query(userquery, function (err, result) {
         if (err) throw err;
 
-        var divcontainer = document.getElementById("centercontainer");
+        const divcontainer = document.getElementById("centercontainer");
 
-        var tbl = document.createElement("table");
+        const tbl = document.createElement("table");
         tbl.classList.add("table");
         tbl.classList.add("table-dark");
         tbl.classList.add("col-lg-auto");
-        var tblhead = document.createElement("thead");
+        const tblhead = document.createElement("thead");
         divcontainer.appendChild(tbl);
 
         // Header tableau
-        var trhead = document.createElement("tr");
+        const trhead = document.createElement("tr");
 
-        var th1 = document.createElement("th");
-        var thjoueur = document.createTextNode("Joueur");
+        const th1 = document.createElement("th");
+        const thjoueur = document.createTextNode("Joueur");
         th1.appendChild(thjoueur);
 
-        var th2 = document.createElement("th");
-        var thmail = document.createTextNode("Adresse e-mail");
+        const th2 = document.createElement("th");
+        const thmail = document.createTextNode("Adresse e-mail");
         th2.appendChild(thmail);
 
-        var th3 = document.createElement("th");
-        var theditbtn = document.createTextNode("");
+        const th3 = document.createElement("th");
+        const theditbtn = document.createTextNode("");
         th3.appendChild(theditbtn);
 
         tblhead.appendChild(th1);
@@ -112,27 +119,27 @@ function getAllAdmin() {
         tblhead.appendChild(th3);
         //
 
-        var tblBody = document.createElement("tbody");
+        const tblBody = document.createElement("tbody");
 
         tbl.appendChild(tblBody);
         tbl.appendChild(tblhead);
 
         // Declare ID
-        var idinc;
+        let idinc;
 
         Object.keys(result).forEach(function (key) {
             const playerresult = result[key];
-            // ID incrémenté
+            // ID increment
             idinc++;
 
-            var trrow = document.createElement("tr");
+            const trrow = document.createElement("tr");
 
-            var td1 = document.createElement("td");
-            var td2 = document.createElement("td");
-            var td3 = document.createElement("td");
-            var text1 = document.createTextNode(playerresult.username);
-            var text2 = document.createTextNode(playerresult.email);
-            var text3 = document.createElement("a");
+            const td1 = document.createElement("td");
+            const td2 = document.createElement("td");
+            const td3 = document.createElement("td");
+            const text1 = document.createTextNode(playerresult.username);
+            const text2 = document.createTextNode(playerresult.email);
+            const text3 = document.createElement("a");
             text3.classList.add("btn");
             text3.classList.add("btn-primary");
             text3.href = "adminEdit.html"
@@ -147,7 +154,7 @@ function getAllAdmin() {
         });
 
         // Bouton retour
-        var backbutton = document.createElement("a");
+        const backbutton = document.createElement("a");
         backbutton.innerText = "Retour";
         backbutton.href = "index.html";
         backbutton.classList.add("btn");
@@ -168,31 +175,31 @@ function getScores() {
         });
     });
 
-    // Récupération high scores
+    // Get high scores
     con.query(scorequery, function (err, result) {
         if (err) throw err;
-        var divcontainer = document.getElementById("centercontainer");
+        const divcontainer = document.getElementById("centercontainer");
 
-        var tbl = document.createElement("table");
+        const tbl = document.createElement("table");
         tbl.classList.add("table");
         tbl.classList.add("table-dark");
         tbl.classList.add("col-lg-auto");
-        var tblhead = document.createElement("thead");
+        const tblhead = document.createElement("thead");
         divcontainer.appendChild(tbl);
 
-        // Header tableau
-        var trhead = document.createElement("tr");
+        // Header table
+        const trhead = document.createElement("tr");
 
-        var th1 = document.createElement("th");
-        var thjoueur = document.createTextNode("Joueur");
+        const th1 = document.createElement("th");
+        const thjoueur = document.createTextNode("Joueur");
         th1.appendChild(thjoueur);
 
-        var th2 = document.createElement("th");
-        var thlvl = document.createTextNode("Score total");
+        const th2 = document.createElement("th");
+        const thlvl = document.createTextNode("Score total");
         th2.appendChild(thlvl);
 
-        var th3 = document.createElement("th");
-        var th5best = document.createTextNode("5 meilleures parties");
+        const th3 = document.createElement("th");
+        const th5best = document.createTextNode("5 meilleures parties");
         th3.appendChild(th5best);
 
         tblhead.appendChild(th1);
@@ -200,21 +207,21 @@ function getScores() {
         tblhead.appendChild(th3);
         //
 
-        var tblBody = document.createElement("tbody");
+        const tblBody = document.createElement("tbody");
 
         tbl.appendChild(tblBody);
         tbl.appendChild(tblhead);
 
         Object.keys(result).forEach(function (key) {
             const scoreresult = result[key];
-            var trrow = document.createElement("tr");
+            const trrow = document.createElement("tr");
 
-            var td1 = document.createElement("td");
-            var td2 = document.createElement("td");
-            var td3 = document.createElement("td");
-            var text1 = document.createTextNode(scoreresult.username);
-            var text2 = document.createTextNode(scoreresult.total_score);
-            var text3 = document.createTextNode(scoreresult.best5_score);
+            const td1 = document.createElement("td");
+            const td2 = document.createElement("td");
+            const td3 = document.createElement("td");
+            const text1 = document.createTextNode(scoreresult.username);
+            const text2 = document.createTextNode(scoreresult.total_score);
+            const text3 = document.createTextNode(scoreresult.best5_score);
             td1.appendChild(text1);
             td2.appendChild(text2);
             td3.appendChild(text3);
@@ -224,8 +231,8 @@ function getScores() {
             tblBody.appendChild(trrow);
         });
 
-        // Bouton retour
-        var backbutton = document.createElement("a");
+        // "Retour" button
+        const backbutton = document.createElement("a");
         backbutton.innerText = "Retour";
         backbutton.href = "index.html";
         backbutton.classList.add("btn");
@@ -235,12 +242,12 @@ function getScores() {
     });
 }
 
-// Fonction future pour afficher le nom d'utilisateur connecté
+// Function to check all session variables and make buttons redirect to correct views
 function redirectSession() {
-    var element = document.getElementById("welcome");
-    var getUserDiv = document.getElementById("user");
-    var btnProfile = document.getElementById("buttonProfile");
-    var btnAdmin = document.getElementById("adminAccess");
+    const element = document.getElementById("welcome");
+    const getUserDiv = document.getElementById("user");
+    const btnProfile = document.getElementById("buttonProfile");
+    const btnAdmin = document.getElementById("adminAccess");
     if (isCon == 'true') {
         const userinfoUsername = store.get('username')
         element.classList.remove("invisible");
@@ -258,12 +265,12 @@ function redirectSession() {
     }
 }
 
-// Fonction pour quitter le jeu
+// Exit game function with ipcMessage
 function closeApp() {
     ipcRenderer.send('close-me')
 }
 
-// Fonction de Login
+// Login function
 function loginForm(event) {
     event.preventDefault() // stop the form from submitting
 
@@ -300,7 +307,7 @@ function loginForm(event) {
     });
 }
 
-// Fonction de Login admin
+// Admin login function
 function adminLoginForm(event) {
     event.preventDefault() // stop the form from submitting
 
@@ -334,7 +341,7 @@ function adminLoginForm(event) {
     });
 }
 
-// Fonction de register
+// Register function
 function registerForm(event) {
     event.preventDefault() // stop the form from submitting
 
@@ -348,22 +355,20 @@ function registerForm(event) {
     const hashedpass = bcrypt.hashSync(password, salt);
 
     // Querys
-    let registerquery = "INSERT INTO user (username, email, password) VALUES ('" + username + "', '" + email + "', '" + hashedpass + "')"
-    var checkquery = "SELECT username, email FROM user WHERE username = '" + username + "' OR email = '" + email + "'";
+    const registerquery = "INSERT INTO user (username, email, password) VALUES ('" + username + "', '" + email + "', '" + hashedpass + "')"
+    const checkquery = "SELECT username, email FROM user WHERE username = '" + username + "' OR email = '" + email + "'";
 
-    // Check les deux password
     if (password != passwordConfirm) {
         alert("Les deux mots de passes ne correspondent pas");
         return Error1
     }
 
-    // Check longueur password
     else if (password.length < 8) {
         alert("Le mot de passe doit faire au moins 8 caractères")
         return Error2
     } else {
 
-        // Check si un utilisateur existe déjà
+        // Check if user already exists in database
         con.query(checkquery, function (err, result) {
             if (err) throw err;
 
@@ -371,7 +376,7 @@ function registerForm(event) {
                 alert("Erreur : Un utilisateur avec ce pseudo ou cette adresse mail existe déjà");
             } else {
 
-                // Register dans la BDD
+                // Register in BDD
                 con.query(registerquery, function (err, result) {
                     if (err) throw err;
 
@@ -383,7 +388,7 @@ function registerForm(event) {
     }
 }
 
-// Fonction d'edit
+// Edit account infos function
 function editForm(event) {
     event.preventDefault() // stop the form from submitting
 
@@ -396,24 +401,21 @@ function editForm(event) {
     const salt = bcrypt.genSaltSync(saltRounds);
     const hashednewpass = bcrypt.hashSync(newpassword, salt);
 
-    // Check les deux password
     const hashOldCompare = bcrypt.compareSync(oldpassword, store.get('password'));
 
     if (hashOldCompare != true) {
         alert("L'ancien mot de passe ne correspond pas");
         return Error1
     } else if (newpassword.length < 8) {
-        // Check longueur password
         alert("Le mot de passe doit faire au moins 8 caractères")
         return Error2
     } else {
-        // Check si le username ou email est le mếme
+        // Check if username is the same and skip check if it's the same
         if (username == store.get('username') && email == store.get('email')) {
             updateInfos();
         } else {
             const checkuserquery = "SELECT username, email FROM user WHERE username = '" + username + "' OR email = '" + email + "'";
 
-            // Check si un utilisateur existe déjà
             con.query(checkuserquery, function (err, result) {
                 if (err) throw err;
 
@@ -422,12 +424,12 @@ function editForm(event) {
                     return Error3
                 } else {
 
-                    // Register dans la BDD
+                    // Register in BDD
                     function updateInfos() {
                         const updatequery1 = "UPDATE user SET username = '" + username + "', email = '" + email + "', password = '" + hashednewpass + "' WHERE username = '" + store.get('username') + "'";
                         const updatequery2 = "UPDATE scores SET username = '" + username + "' WHERE username = '" + store.get('username') + "'";
 
-                        // Edit local
+                        // Edit local session variables
                         store.set('username', username);
                         store.set('email', email)
                         store.set('password', hashednewpass)
@@ -450,7 +452,7 @@ function editForm(event) {
     }
 }
 
-// Logout
+// Logout function
 function logout() {
     store.set('connected', 'false');
     store.delete('username');
@@ -461,7 +463,7 @@ function logout() {
     window.location.replace("index.html");
 }
 
-// Fonction future pour l'update score
+// Future function for score update; needs 3 values : final game score, best of 5 score, user_id or username
 // function scoreUpdate {
 //     const updatescorequery = "UPDATE scores SET total_score = '" + valueTotalScore + "', best5_score = '" + valueBest5 + "'";
 //     // Get Score Value
