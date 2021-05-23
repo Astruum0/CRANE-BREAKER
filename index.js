@@ -10,18 +10,18 @@ const { app, BrowserWindow } = electron;
 let timerWindow;
 let settingsWindow;
 
-////////////////////////////////////////////
+////////////////////////
 
-//////// START WINDOW WITH OPTIONS /////////
+//////// WINDOW /////////
 
-app.on("ready", async () => {
+app.on("ready", () => {
     timerWindow = new BrowserWindow({
-        titleBarStyle: "hidden", minWidth: 600, minHeight: 800, icon: 'img/appicon.ico', webPreferences: {
-            nodeIntegration: true, // NECESSARY ! FOR NODE REQUIRE
+        webPreferences: {
+            nodeIntegration: true, // NECESSARY ! FOR NODE INTEGRATION
             contextIsolation: false,
-        }
+        },
+        titleBarStyle: "hidden",
     });
-
     timerWindow.loadURL(
         url.format({
             pathname: path.join(__dirname, "views", "index.html"),
