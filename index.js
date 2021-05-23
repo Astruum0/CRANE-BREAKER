@@ -16,6 +16,7 @@ let settingsWindow;
 
 app.on("ready", () => {
     timerWindow = new BrowserWindow({
+        minWidth: 600, minHeight: 800, icon: 'img/appicon.ico',
         webPreferences: {
             nodeIntegration: true, // NECESSARY ! FOR NODE INTEGRATION
             contextIsolation: false,
@@ -24,7 +25,7 @@ app.on("ready", () => {
     });
     timerWindow.loadURL(
         url.format({
-            pathname: path.join(__dirname, "views", "index.html"),
+            pathname: path.join(__dirname, "views", "intro.html"),
             protocol: "file",
             slashes: true,
         })
