@@ -102,7 +102,7 @@ function draw() {
         player.score += 1000;
     }
 
-    player.update(mouseX, mouseY);
+    // player.update(mouseX, mouseY);
 
     player.show();
     ball.show();
