@@ -3,7 +3,7 @@ var pointInPolygon = require("point-in-polygon");
 class Ball {
     constructor(x = screenWidth / 2, y = screenHeight / 2) {
         this.pos = createVector(x, y);
-        this.vel = createVector(random(-10, 10), random(5));
+        this.vel = createVector(random(-7, 7), random(3, 6));
         this.r = 13;
         this.hit = false;
         this.bounciness = 0.2;
@@ -54,7 +54,10 @@ class Ball {
         let brickIndex = this.intersectWithBrick(bricks);
         if (brickIndex != undefined && bricks[brickIndex].breakable) {
             bricks.splice(brickIndex, 1);
+            pad.score += 5;
         }
+
+        return this.pos.y - this.r > screenHeight;
     }
 
     intersectWithBrick(bricks) {

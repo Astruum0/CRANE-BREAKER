@@ -12,6 +12,8 @@ class Pad {
             [this.x - this.width / 2, this.y + this.height],
             [this.x + this.width / 2, this.y + this.height],
         ];
+
+        this.score = 0;
     }
     update(x, y) {
         this.direction.x = x - this.x;

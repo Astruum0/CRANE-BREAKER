@@ -47,6 +47,7 @@ const generateLevel = (row, col) => {
                     bricks.push(
                         new Brick(i + sidePadding, j + 30, brickWidth, brickHeight)
                     );
+                    continue;
                 }
             } else if (diagonal) {
                 if (
@@ -56,12 +57,12 @@ const generateLevel = (row, col) => {
                     bricks.push(
                         new Brick(i + sidePadding, j + 30, brickWidth, brickHeight)
                     );
-                    //continue;
+                    continue;
                 } else if (fillUnbreakableDiagonal) {
                     bricks.push(
                         new Brick(i + sidePadding, j + 30, brickWidth, brickHeight, false)
                     );
-                    //continue;
+                    continue;
                 }
             }
 
@@ -70,12 +71,14 @@ const generateLevel = (row, col) => {
                     bricks.push(
                         new Brick(i + sidePadding, j + 30, brickWidth, brickHeight)
                     );
+                    continue;
                 }
             } else if (reversedDiamondShape) {
                 if (Math.min(y, row - y - 1) <= abs(x - parseInt(row / 2))) {
                     bricks.push(
                         new Brick(i + sidePadding, j + 30, brickWidth, brickHeight)
                     );
+                    continue;
                 }
             }
 
