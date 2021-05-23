@@ -23,9 +23,8 @@ const saltRounds = 10;
 
 // SQL querys
 const userquery = 'SELECT * FROM `user` LIMIT 10';
-const scorequery = "SELECT u.username AS 'username', SUM(sc.score) AS 'total', sc.score_date AS 'date' FROM scores AS sc LEFT JOIN user AS u ON u.id = sc.user_id GROUP BY username, date";
-
-const getUserScores = "SELECT u.username AS 'username', SUM(sc.total_score) AS 'total', sc.score_date AS 'date' FROM scores AS sc LEFT JOIN user AS u ON u.id = sc.user_id WHERE username = '" + getUsername + "'";
+const scorequery = "SELECT u.username AS 'username', SUM(sc.score) AS 'total', (SELECT SUM(sc.score) FROM scores AS sc GROUP BY sc.score ORDER BY MAX(sc.score) DESC LIMIT 5) AS 'best5' FROM scores AS sc LEFT JOIN user AS u ON u.id = sc.user_id GROUP BY username, best5";
+const getUserScores = "SELECT u.username AS 'username', SUM(sc.score) AS 'total', sc.score_date AS 'date' FROM scores AS sc LEFT JOIN user AS u ON u.id = sc.user_id WHERE username = '" + getUsername + "' GROUP BY username, date";
 
 
 // BDD connection options
@@ -48,19 +47,20 @@ con.connect(function (err) {
 // Check if session exists
 function checkSession() {
     if (isCon == 'true') {
-        document.getElementById("username").innerText = getUsername;
-        document.getElementById("email").innerText = getEmail;
-        document.getElementById("total_score").innerText = getTotalScore;
-
         // Get scores
         con.query(getUserScores, function (err, result) {
             if (err) throw err;
 
-            store.set('total_score', result.total)
-            if (result.total == 'undefined') {
+            store.set('total_score', result[0].total)
+
+            if (getTotalScore == undefined) {
                 store.set('total_score', 0);
             }
         });
+
+        document.getElementById("username").innerText = getUsername;
+        document.getElementById("email").innerText = getEmail;
+        document.getElementById("total_score").innerText = getTotalScore;
 
     } else {
         window.location.replace("login.html");
@@ -197,7 +197,7 @@ function getScores() {
             const td3 = document.createElement("td");
             const text1 = document.createTextNode(scoreresult.username);
             const text2 = document.createTextNode(scoreresult.total);
-            const text3 = document.createTextNode(scoreresult.date);
+            const text3 = document.createTextNode(scoreresult.best5);
             td1.appendChild(text1);
             td2.appendChild(text2);
             td3.appendChild(text3);
@@ -250,10 +250,10 @@ function closeApp() {
 function loginForm(event) {
     event.preventDefault() // stop the form from submitting
 
-    let username = document.getElementById("username").value;
-    let password = document.getElementById("password").value;
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
 
-    let loginquery = "SELECT username, password, email FROM user WHERE username = '" + username + "'";
+    const loginquery = "SELECT username, password, email FROM user WHERE username = '" + username + "'";
 
     con.query(loginquery, function (err, result) {
         if (err) throw err;
@@ -332,7 +332,6 @@ function registerForm(event) {
 
     // Querys
     const registerquery = "INSERT INTO user (username, email, password) VALUES ('" + username + "', '" + email + "', '" + hashedpass + "')"
-    const alsoscorequery = "INSERT INTO scores (user_id, total_score) VALUES ((SELECT id FROM user WHERE username = '" + username + "'), 0)";
     const checkquery = "SELECT username, email FROM user WHERE username = '" + username + "' OR email = '" + email + "'";
 
     if (password != passwordConfirm) {
@@ -359,10 +358,6 @@ function registerForm(event) {
 
                     alert("Utilisateur enregistré !")
                     window.location.replace("index.html");
-
-                    con.query(alsoscorequery, function (err, result) {
-                        if (err) throw err;
-                    });
                 });
             }
         });
