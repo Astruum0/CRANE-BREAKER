@@ -13,8 +13,6 @@ const getUsername = store.get('username');
 const getEmail = store.get('email');
 const getTotalScore = store.get('total_score');
 const getBest5 = store.get('best5');
-
-let maxplayerresult;
 const saltRounds = 10;
 
 // Admin hash generator
@@ -25,11 +23,8 @@ const saltRounds = 10;
 
 // SQL querys
 const userquery = 'SELECT * FROM `user` LIMIT 10';
-const scorequery = 'SELECT * FROM `scores` LIMIT 10';
-const maxplayersquery = "SELECT COUNT(user_id) AS 'countresult' FROM `scores`";
-const adminmaxplayers = "SELECT COUNT(id) AS 'countresult' FROM `user`";
-
-const getUserScores = "SELECT total_score, best5_score FROM scores WHERE username = '" + getUsername + "'";
+const scorequery = "SELECT u.username AS 'username', SUM(sc.score) AS 'total', sc.score_date AS 'best5' FROM scores AS sc LEFT JOIN user AS u ON u.id = sc.user_id GROUP BY username, best5";
+const getUserScores = "SELECT u.username AS 'username', SUM(sc.score) AS 'total', sc.score_date AS 'date' FROM scores AS sc LEFT JOIN user AS u ON u.id = sc.user_id WHERE username = '" + getUsername + "' GROUP BY username, date";
 
 
 // BDD connection options
@@ -52,25 +47,21 @@ con.connect(function (err) {
 // Check if session exists
 function checkSession() {
     if (isCon == 'true') {
-        document.getElementById("username").innerText = getUsername;
-        document.getElementById("email").innerText = getEmail;
-
         // Get scores
         con.query(getUserScores, function (err, result) {
             if (err) throw err;
-            console.log(result[0])
+
+            store.set('total_score', result[0].total)
+
+            if (getTotalScore == undefined) {
+                store.set('total_score', 0);
+            }
         });
 
-        if (result[0].total_score == 'undefined' || result[0].best5_score == 'undefined') {
-            store.set('total_score', "Vous n'avez aucun score total. Jouez maintenant !");
-            store.set('best5', "Vous n'avez aucun meilleur score de 5. Jouez maintenant !");
-        } else {
-            store.set('total_score', result[0].total_score);
-            store.set('best5', result[0].best5_score);
-        }
-
+        document.getElementById("username").innerText = getUsername;
+        document.getElementById("email").innerText = getEmail;
         document.getElementById("total_score").innerText = getTotalScore;
-        document.getElementById("best_of_5").innerText = getBest5;
+
     } else {
         window.location.replace("login.html");
     }
@@ -78,15 +69,6 @@ function checkSession() {
 
 // Function to get all admin infos
 function getAllAdmin() {
-    con.query(maxplayersquery, function (err, result) {
-        if (err) throw err;
-
-        Object.keys(result).forEach(function (key) {
-            let row = result[key];
-            maxplayerresult = row.countresult;
-        });
-    });
-
     con.query(userquery, function (err, result) {
         if (err) throw err;
 
@@ -166,14 +148,6 @@ function getAllAdmin() {
 
 // Function to get scores and display them in scores.html
 function getScores() {
-    con.query(adminmaxplayers, function (err, result) {
-        if (err) throw err;
-
-        Object.keys(result).forEach(function (key) {
-            let row = result[key];
-            maxplayerresult = row.countresult;
-        });
-    });
 
     // Get high scores
     con.query(scorequery, function (err, result) {
@@ -212,6 +186,8 @@ function getScores() {
         tbl.appendChild(tblBody);
         tbl.appendChild(tblhead);
 
+        console.log(result);
+
         Object.keys(result).forEach(function (key) {
             const scoreresult = result[key];
             const trrow = document.createElement("tr");
@@ -220,8 +196,8 @@ function getScores() {
             const td2 = document.createElement("td");
             const td3 = document.createElement("td");
             const text1 = document.createTextNode(scoreresult.username);
-            const text2 = document.createTextNode(scoreresult.total_score);
-            const text3 = document.createTextNode(scoreresult.best5_score);
+            const text2 = document.createTextNode(scoreresult.total);
+            const text3 = document.createTextNode(scoreresult.best5);
             td1.appendChild(text1);
             td2.appendChild(text2);
             td3.appendChild(text3);
@@ -274,10 +250,10 @@ function closeApp() {
 function loginForm(event) {
     event.preventDefault() // stop the form from submitting
 
-    let username = document.getElementById("username").value;
-    let password = document.getElementById("password").value;
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
 
-    let loginquery = "SELECT username, password, email FROM user WHERE username = '" + username + "'";
+    const loginquery = "SELECT username, password, email FROM user WHERE username = '" + username + "'";
 
     con.query(loginquery, function (err, result) {
         if (err) throw err;

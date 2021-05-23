@@ -4,11 +4,8 @@ const url = require("url");
 const path = require("path");
 const db = require("./script/preload");
 const { ipcMain } = require('electron');
-const { net } = require('electron');
 const { app, BrowserWindow } = electron;
-
 let timerWindow;
-let settingsWindow;
 
 ////////////////////////
 
