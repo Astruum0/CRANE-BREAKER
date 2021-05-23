@@ -18,6 +18,15 @@ var bricks = [];
 
 var start = false;
 
+function isLevelCleared(level) {
+    for (var i = 0; i < level.length; i++) {
+        if (level[i].breakable) {
+            return false;
+        }
+    }
+    return true;
+}
+
 function startVideo() {
     navigator.getUserMedia({ video: {} },
         (stream) => (video.srcObject = stream),
@@ -51,11 +60,7 @@ function setup() {
     const canvas = createCanvas(screenWidth, screenHeight);
     canvas.parent("container");
 
-    for (var j = 0; j < 4; j++) {
-        for (var i = sidePadding; i < gameWidth; i += gameWidth / 10) {
-            bricks.push(new Brick(i, j * 50 + 50, gameWidth / 10, 50, true));
-        }
-    }
+    bricks = generateLevel(15, 15);
 
     // Promise.all([
     //     faceapi.nets.tinyFaceDetector.loadFromUri("../models"),
@@ -63,22 +68,61 @@ function setup() {
     // ]).then(startVideo);
 }
 
+function keyPressed() {
+    if (keyCode == 32) {
+        start = !start;
+    }
+    if (keyCode == 82) {
+        start = false;
+        ball.reset();
+        bricks = generateLevel(15, 15);
+        player.score = 0;
+    }
+}
+
 function draw() {
     clear();
     noFill();
+    rectMode(CORNER);
     stroke(0);
     strokeWeight(8);
     rect(sidePadding, 0, screenWidth - sidePadding * 2, screenHeight);
     background(0, 200);
 
-    if (start) ball.update(player, bricks);
+    if (start && ball.update(player, bricks)) {
+        start = false;
+        ball.reset();
+        bricks = generateLevel(15, 15);
+        player.score = 0;
+    }
+    if (isLevelCleared(bricks)) {
+        start = false;
+        ball.reset();
+        bricks = generateLevel(15, 15);
+        player.score += 1000;
+    }
 
     player.update(mouseX, mouseY);
 
     player.show();
     ball.show();
 
+    textSize(28);
+    text(player.score, 20, 100);
+
     for (var i = 0; i < bricks.length; i++) {
         bricks[i].show();
+    }
+
+    if (!start) {
+        rectMode(CENTER);
+        textAlign(CENTER, TOP);
+        textSize(32);
+        fill(255);
+        text(
+            "Press space to continue . . .",
+            screenWidth / 2,
+            (screenHeight * 2) / 3
+        );
     }
 }

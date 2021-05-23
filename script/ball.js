@@ -3,15 +3,15 @@ var pointInPolygon = require("point-in-polygon");
 class Ball {
     constructor(x = screenWidth / 2, y = screenHeight / 2) {
         this.pos = createVector(x, y);
-        this.vel = createVector(-5, -10);
-        this.r = 20;
+        this.vel = createVector(random(-7, 7), random(3, 6));
+        this.r = 13;
         this.hit = false;
         this.bounciness = 0.2;
     }
 
     reset() {
         this.pos = createVector(screenWidth / 2, screenHeight / 2);
-        this.vel = createVector(-5, -10);
+        this.vel = createVector(random(-7, 7), random(3, 7));
     }
 
     bounce(pad) {
@@ -52,9 +52,12 @@ class Ball {
         }
 
         let brickIndex = this.intersectWithBrick(bricks);
-        if (brickIndex != undefined) {
+        if (brickIndex != undefined && bricks[brickIndex].breakable) {
             bricks.splice(brickIndex, 1);
+            pad.score += 5;
         }
+
+        return this.pos.y - this.r > screenHeight;
     }
 
     intersectWithBrick(bricks) {
@@ -71,7 +74,12 @@ class Ball {
                 ((this.pos.y - this.r <= brick.y1 && this.pos.y + this.r >= brick.y1) ||
                     (this.pos.y - this.r <= brick.y2 && this.pos.y + this.r >= brick.y2))
             ) {
-                this.vel.y *= -1;
+                if (this.vel.y <= 0) {
+                    this.pos.y = brick.y2 + this.r;
+                } else if (this.vel.y > 0) {
+                    this.pos.y = brick.y1 - this.r;
+                }
+                this.vel.y *= -0.98;
                 return i;
             } else if (
                 this.pos.y >= brick.y1 &&
@@ -79,7 +87,13 @@ class Ball {
                 ((this.pos.x - this.r <= brick.x1 && this.pos.x + this.r >= brick.x1) ||
                     (this.pos.x - this.r <= brick.x2 && this.pos.x + this.r >= brick.x2))
             ) {
-                this.vel.x *= -1;
+                if (this.vel.x <= 0) {
+                    this.pos.x = brick.x2 + this.r;
+                } else if (this.vel.y > 0) {
+                    this.pos.x = brick.x1 - this.r;
+                }
+
+                this.vel.x *= -0.98;
                 return i;
             }
         }
@@ -88,7 +102,7 @@ class Ball {
     show() {
         fill(255);
         stroke(0);
-        strokeWeight(0);
+        strokeWeight(2);
         ellipseMode(CENTER);
         ellipse(this.pos.x, this.pos.y, this.r * 2);
     }

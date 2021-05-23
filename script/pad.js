@@ -5,8 +5,18 @@ class Pad {
     constructor() {
         this.width = height / 5;
         this.x = width / 2;
-        this.y = width / 2;
-        this.height = this.width / 10;
+        this.y = height / 2;
+        this.height = this.width / 20;
+        this.direction = createVector(this.x, this.y);
+
+        this.hitbox = [
+            [this.x - this.width / 2, this.y],
+            [this.x + this.width / 2, this.y],
+            [this.x - this.width / 2, this.y + this.height],
+            [this.x + this.width / 2, this.y + this.height],
+        ];
+
+        this.score = 0;
     }
     update(x, y) {
         this.x = x;
