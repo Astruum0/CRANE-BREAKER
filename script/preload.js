@@ -23,7 +23,7 @@ const saltRounds = 10;
 
 // SQL querys
 const userquery = 'SELECT * FROM `user` LIMIT 10';
-const scorequery = "SELECT u.username AS 'username', SUM(sc.score) AS 'total', (SELECT SUM(sc.score) FROM scores AS sc GROUP BY sc.score ORDER BY MAX(sc.score) DESC LIMIT 5) AS 'best5' FROM scores AS sc LEFT JOIN user AS u ON u.id = sc.user_id GROUP BY username, best5";
+const scorequery = "SELECT u.username AS 'username', SUM(sc.score) AS 'total', sc.score_date AS 'best5' FROM scores AS sc LEFT JOIN user AS u ON u.id = sc.user_id GROUP BY username, best5";
 const getUserScores = "SELECT u.username AS 'username', SUM(sc.score) AS 'total', sc.score_date AS 'date' FROM scores AS sc LEFT JOIN user AS u ON u.id = sc.user_id WHERE username = '" + getUsername + "' GROUP BY username, date";
 
 

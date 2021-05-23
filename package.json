@@ -20,30 +20,12 @@
         "url": "https://github.com/Astruum0/CRANE-BREAKER/issues"
     },
     "homepage": "https://github.com/Astruum0/CRANE-BREAKER#readme",
-    "dependencies": {
-        "@tensorflow/tfjs-node": "^3.3.0",
-        "bcrypt": "^5.0.1",
-        "body-parser": "^1.19.0",
-        "canvas": "^2.7.0",
-        "cookie-session": "^1.4.0",
-        "ejs": "^3.1.6",
-        "electron": "^12.0.2",
-        "electron-alert": "^0.1.11",
-        "electron-browser-storage": "^1.0.7",
-        "electron-log": "^4.3.4",
-        "electron-store": "^8.0.0",
-        "esm": "^3.2.25",
-        "express": "^4.17.1",
-        "express-session": "^1.17.1",
-        "express-sessions": "^1.0.1",
-        "express-validator": "^6.10.0",
-        "face-api.js": "^0.20.0",
-        "jsdom": "^16.5.3",
-        "mysql": "^2.18.1",
-        "mysql2": "^2.2.5",
-        "nedb": "^1.8.0"
-    },
+    "dependencies": {},
     "devDependencies": {
-        "electron-packager": "^15.2.0"
+        "bcrypt": "^5.0.1",
+        "electron": "^12.0.9",
+        "electron-packager": "^15.2.0",
+        "electron-store": "^8.0.0",
+        "mysql": "^2.18.1"
     }
 }
