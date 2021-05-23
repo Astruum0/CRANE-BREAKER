@@ -1,6 +1,6 @@
-// const video = document.getElementById("video");
-// video.width = window.screen.width;
-// video.height = window.screen.height;
+const video = document.getElementById("video");
+video.width = window.screen.width;
+video.height = window.screen.height;
 
 var topLeftX, topLeftY, topRightX, topRightY;
 
@@ -34,25 +34,25 @@ function startVideo() {
     );
 }
 
-// video.addEventListener("play", () => {
-//     const displaySize = { width: video.width, height: video.height };
+video.addEventListener("play", () => {
+    const displaySize = { width: video.width, height: video.height };
 
-//     setInterval(async() => {
-//         const detections = await faceapi.detectAllFaces(
-//             video,
-//             new faceapi.TinyFaceDetectorOptions()
-//         );
-//         const resizedDetections = faceapi.resizeResults(detections, displaySize);
-//         if (resizedDetections[0]) {
-//             topLeftX = video.width - resizedDetections[0].box.topLeft.x;
-//             topLeftY = resizedDetections[0].box.topLeft.y + screenHeight / 2.8;
-//             topRightX = (resizedDetections[0].box.topRight.x - video.width) * -1;
-//             topRightY = resizedDetections[0].box.topRight.y + screenHeight / 2.8;
+    setInterval(async () => {
+        const detections = await faceapi.detectAllFaces(
+            video,
+            new faceapi.TinyFaceDetectorOptions()
+        );
+        const resizedDetections = faceapi.resizeResults(detections, displaySize);
+        if (resizedDetections[0]) {
+            topLeftX = video.width - resizedDetections[0].box.topLeft.x;
+            topLeftY = resizedDetections[0].box.topLeft.y + screenHeight / 2.8;
+            topRightX = (resizedDetections[0].box.topRight.x - video.width) * -1;
+            topRightY = resizedDetections[0].box.topRight.y + screenHeight / 2.8;
 
-//             player.update((topLeftX + topRightX) / 2, topLeftY);
-//         }
-//     }, 100);
-// });
+            player.update((topLeftX + topRightX) / 2, topLeftY);
+        }
+    }, 100);
+});
 
 function setup() {
     player = new Pad();
@@ -62,10 +62,10 @@ function setup() {
 
     bricks = generateLevel(15, 15);
 
-    // Promise.all([
-    //     faceapi.nets.tinyFaceDetector.loadFromUri("../models"),
-    //     faceapi.nets.faceLandmark68Net.loadFromUri("../models"),
-    // ]).then(startVideo);
+    Promise.all([
+        faceapi.nets.tinyFaceDetector.loadFromUri("../models"),
+        faceapi.nets.faceLandmark68Net.loadFromUri("../models"),
+    ]).then(startVideo);
 }
 
 function keyPressed() {
