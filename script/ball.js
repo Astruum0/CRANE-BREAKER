@@ -11,7 +11,7 @@ class Ball {
 
     reset() {
         this.pos = createVector(screenWidth / 2, screenHeight / 2);
-        this.vel = createVector(random(-7, 7), random(3, 7));
+        this.vel = createVector(random(-7, 7), random(3, 6));
     }
 
     bounce(pad) {

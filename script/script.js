@@ -3,9 +3,9 @@ faceapi.env.monkeyPatch({
     Image: HTMLImageElement,
     ImageData: ImageData,
     Video: HTMLVideoElement,
-    createCanvasElement: () => document.createElement('canvas'),
-    createImageElement: () => document.createElement('img')
-})
+    createCanvasElement: () => document.createElement("canvas"),
+    createImageElement: () => document.createElement("img"),
+});
 
 const video = document.getElementById("video");
 video.width = window.screen.width;
@@ -48,7 +48,7 @@ function startVideo() {
 video.addEventListener("play", () => {
     const displaySize = { width: video.width, height: video.height };
 
-    setInterval(async () => {
+    setInterval(async() => {
         const detections = await faceapi.detectAllFaces(
             video,
             new faceapi.TinyFaceDetectorOptions()
@@ -56,9 +56,9 @@ video.addEventListener("play", () => {
         const resizedDetections = faceapi.resizeResults(detections, displaySize);
         if (resizedDetections[0]) {
             topLeftX = video.width - resizedDetections[0].box.topLeft.x;
-            topLeftY = resizedDetections[0].box.topLeft.y + screenHeight / 2.8;
+            topLeftY = resizedDetections[0].box.topLeft.y + screenHeight / 5;
             topRightX = (resizedDetections[0].box.topRight.x - video.width) * -1;
-            topRightY = resizedDetections[0].box.topRight.y + screenHeight / 2.8;
+            topRightY = resizedDetections[0].box.topRight.y + screenHeight / 5;
 
             player.update((topLeftX + topRightX) / 2, topLeftY);
         }
@@ -80,16 +80,16 @@ function setup() {
 }
 
 function keyPressed() {
-    if (keyCode == 32) {
-        start = !start;
+    if (keyCode == 32 && !start) {
+        start = true;
     }
-    if (keyCode == 82) {
-        start = false;
-        ball.reset();
-        bricks = generateLevel(15, 15);
-        addScore(player.score);
-        player.score = 0;
-    }
+    // if (keyCode == 82) {
+    //     start = false;
+    //     ball.reset();
+    //     bricks = generateLevel(15, 15);
+    //     addScore(player.score);
+    //     player.score = 0;
+    // }
 }
 
 function draw() {
@@ -142,10 +142,15 @@ function draw() {
 // Add score from game
 function addScore(playerscore) {
     getPlayerScore = playerscore;
-    if (store.get('connected') == 'true') {
-        const addscorequery = "INSERT INTO scores (user_id, score, score_date) VALUES ('" + store.get('user_id') + "', '" + getPlayerScore + "', NOW())"
+    if (store.get("connected") == "true") {
+        const addscorequery =
+            "INSERT INTO scores (user_id, score, score_date) VALUES ('" +
+            store.get("user_id") +
+            "', '" +
+            getPlayerScore +
+            "', NOW())";
 
-        con.query(addscorequery, function (err, result) {
+        con.query(addscorequery, function(err, result) {
             if (err) throw err;
         });
     } else {
