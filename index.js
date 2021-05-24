@@ -7,19 +7,20 @@ const { ipcMain } = require('electron');
 const { app, BrowserWindow } = electron;
 let timerWindow;
 
-////////////////////////
+////////////////////////////////////////////
 
-//////// WINDOW /////////
+//////// START WINDOW WITH OPTIONS /////////
 
-app.on("ready", () => {
+app.on("ready", async () => {
     timerWindow = new BrowserWindow({
-        minWidth: 600, minHeight: 800, icon: 'img/appicon.ico',
-        webPreferences: {
-            nodeIntegration: true, // NECESSARY ! FOR NODE INTEGRATION
+        titleBarStyle: "hidden", minWidth: 600, minHeight: 900, icon: 'img/appicon.ico', webPreferences: {
+            nodeIntegration: true, // NECESSARY ! FOR NODE REQUIRE
+            enableRemoteModule: true,
             contextIsolation: false,
-        },
-        titleBarStyle: "hidden",
+            preload: path.join(__dirname, 'script/preload.js')
+        }
     });
+
     timerWindow.loadURL(
         url.format({
             pathname: path.join(__dirname, "views", "intro.html"),

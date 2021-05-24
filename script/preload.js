@@ -9,10 +9,11 @@ const bcrypt = require('bcrypt');
 
 // Const declarations
 const isCon = store.get('connected');
+const getUserId = store.get('user_id');
 const getUsername = store.get('username');
 const getEmail = store.get('email');
 const getTotalScore = store.get('total_score');
-const getBest5 = store.get('best5');
+const gestLast5 = store.get('last5');
 const saltRounds = 10;
 
 // Admin hash generator
@@ -23,8 +24,8 @@ const saltRounds = 10;
 
 // SQL querys
 const userquery = 'SELECT * FROM `user` LIMIT 10';
-const scorequery = "SELECT u.username AS 'username', SUM(sc.score) AS 'total', sc.score_date AS 'best5' FROM scores AS sc LEFT JOIN user AS u ON u.id = sc.user_id GROUP BY username, best5";
-const getUserScores = "SELECT u.username AS 'username', SUM(sc.score) AS 'total', sc.score_date AS 'date' FROM scores AS sc LEFT JOIN user AS u ON u.id = sc.user_id WHERE username = '" + getUsername + "' GROUP BY username, date";
+const scorequery = "SELECT u.username AS 'username', SUM(sc.score) AS 'total', SUM(sc.score) AS 'last5' FROM scores AS sc LEFT JOIN user AS u ON u.id = sc.user_id GROUP BY username";
+const getUserScores = "SELECT u.id AS 'user_id', SUM(sc.score) AS 'total', SUM(sc.score) AS 'last5' FROM scores AS sc LEFT JOIN user AS u ON u.id = sc.user_id WHERE username = '" + getUserId + "' GROUP BY user_id";
 
 
 // BDD connection options
@@ -46,7 +47,7 @@ con.connect(function (err) {
 
 // Check if session exists
 function checkSession() {
-    if (isCon == 'true') {
+    if (isCon == 'true' || store.get('adminSession') == 'true') {
         // Get scores
         con.query(getUserScores, function (err, result) {
             if (err) throw err;
@@ -126,6 +127,7 @@ function getAllAdmin() {
             text3.classList.add("btn-primary");
             text3.href = "adminEdit.html"
             text3.innerText = "Modifier";
+            text3.value = idinc;
             td1.appendChild(text1);
             td2.appendChild(text2);
             td3.appendChild(text3);
@@ -173,7 +175,7 @@ function getScores() {
         th2.appendChild(thlvl);
 
         const th3 = document.createElement("th");
-        const th5best = document.createTextNode("5 meilleures parties");
+        const th5best = document.createTextNode("5 dernières parties");
         th3.appendChild(th5best);
 
         tblhead.appendChild(th1);
@@ -186,8 +188,6 @@ function getScores() {
         tbl.appendChild(tblBody);
         tbl.appendChild(tblhead);
 
-        console.log(result);
-
         Object.keys(result).forEach(function (key) {
             const scoreresult = result[key];
             const trrow = document.createElement("tr");
@@ -197,7 +197,7 @@ function getScores() {
             const td3 = document.createElement("td");
             const text1 = document.createTextNode(scoreresult.username);
             const text2 = document.createTextNode(scoreresult.total);
-            const text3 = document.createTextNode(scoreresult.best5);
+            const text3 = document.createTextNode(scoreresult.last5);
             td1.appendChild(text1);
             td2.appendChild(text2);
             td3.appendChild(text3);
@@ -253,7 +253,7 @@ function loginForm(event) {
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
 
-    const loginquery = "SELECT username, password, email FROM user WHERE username = '" + username + "'";
+    const loginquery = "SELECT id, username, password, email FROM user WHERE username = '" + username + "'";
 
     con.query(loginquery, function (err, result) {
         if (err) throw err;
@@ -266,12 +266,14 @@ function loginForm(event) {
             // Compare hash
             const hashCompare = bcrypt.compareSync(password, result[0].password); // true
 
+            user_id = result[0].id;
             email = result[0].email;
             hashed = result[0].password;
 
             if (hashCompare == true) {
                 alert("Vous êtes connecté !")
                 store.set('connected', 'true');
+                store.set('user_id', user_id)
                 store.set('username', username)
                 store.set('email', email)
                 store.set('password', hashed)
@@ -379,7 +381,7 @@ function editForm(event) {
 
     const hashOldCompare = bcrypt.compareSync(oldpassword, store.get('password'));
 
-    if (hashOldCompare != true) {
+    if (hashOldCompare != true ) {
         alert("L'ancien mot de passe ne correspond pas");
         return Error1
     } else if (newpassword.length < 8) {
@@ -402,24 +404,27 @@ function editForm(event) {
 
                     // Register in BDD
                     function updateInfos() {
-                        const updatequery1 = "UPDATE user SET username = '" + username + "', email = '" + email + "', password = '" + hashednewpass + "' WHERE username = '" + store.get('username') + "'";
-                        const updatequery2 = "UPDATE scores SET username = '" + username + "' WHERE username = '" + store.get('username') + "'";
+                        const updatequery1 = "UPDATE user SET username = '" + username + "', email = '" + email + "', password = '" + hashednewpass + "' WHERE id = '" + store.get('user_id') + "'";
+                        const updatequery2 = "UPDATE scores SET username = '" + username + "' WHERE user_id = '" + store.get('user_id') + "'";
 
                         // Edit local session variables
-                        store.set('username', username);
-                        store.set('email', email)
-                        store.set('password', hashednewpass)
-                        con.query(updatequery1, function (err, result) {
-                            if (err) throw err;
-
-                            alert("Modifications effectuées !");
-                            window.location.replace("index.html");
-
-                            con.query(updatequery2, function (err, result) {
+                        if (!store.get('adminSession')) {
+                            store.set('user_id', result[0].user_id);
+                            store.set('username', username);
+                            store.set('email', email);
+                            store.set('password', hashednewpass);
+                            con.query(updatequery1, function (err, result) {
                                 if (err) throw err;
 
+                                alert("Modifications effectuées !");
+                                window.location.replace("index.html");
+
+                                con.query(updatequery2, function (err, result) {
+                                    if (err) throw err;
+
+                                });
                             });
-                        });
+                        }
                     }
                     updateInfos();
                 }
@@ -432,10 +437,11 @@ function editForm(event) {
 function logout() {
     store.set('connected', 'false');
     store.delete('username');
+    store.delete('user_id');
     store.delete('password');
     store.delete('email');
     store.delete('total_score');
-    store.delete('best5');
+    store.delete('last5');
     window.location.replace("index.html");
 }
 

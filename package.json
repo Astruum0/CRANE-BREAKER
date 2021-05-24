@@ -4,7 +4,42 @@
     "description": "Brick breaker game with face-api.js",
     "main": "index.js",
     "scripts": {
-        "start": "electron ."
+        "start": "electron .",
+        "pack": "electron-builder --dir",
+        "dist": "electron-builder"
+    },
+    "build": {
+        "appId": "crane-breaker",
+        "directories": {
+            "buildResources": "img",
+            "output": "release"
+        },
+        "dmg": {
+            "contents": [
+                {
+                    "x": 110,
+                    "y": 150
+                },
+                {
+                    "x": 240,
+                    "y": 150,
+                    "type": "link",
+                    "path": "/Applications"
+                }
+            ]
+        },
+        "linux": {
+            "target": [
+                "deb",
+                "rpm",
+                "snap",
+                "AppImage"
+            ]
+        },
+        "win": {
+            "target": "NSIS",
+            "icon": "img/icons/icon.ico"
+        }
     },
     "repository": {
         "type": "git",
@@ -20,15 +55,17 @@
         "url": "https://github.com/Astruum0/CRANE-BREAKER/issues"
     },
     "homepage": "https://github.com/Astruum0/CRANE-BREAKER#readme",
-    "dependencies": {
-        "electron": "^12.0.2",
-        "face-api.js": "^0.22.2",
-        "point-in-polygon": "^1.1.0"
-    },
+    "dependencies": {},
     "devDependencies": {
+        "electron": "^12.0.2",
+        "electron-builder": "^22.10.5",
+        "@tensorflow/tfjs-node": "^3.3.0",
+        "canvas": "^2.7.0",
         "bcrypt": "^5.0.1",
         "electron-packager": "^15.2.0",
         "electron-store": "^8.0.0",
-        "mysql": "^2.18.1"
+        "mysql": "^2.18.1",
+        "face-api.js": "^0.22.2",
+        "point-in-polygon": "^1.1.0"
     }
 }
