@@ -37,19 +37,19 @@ Crane Breaker reprend le classique du jeu de casse-brique avec la petite différ
 
 ## Captures d&#39;écran
 
-![](RackMultipart20210524-4-12i4g8w_html_d0c7765e91b1a156.png)
+![image](https://user-images.githubusercontent.com/20344764/119358793-42bb5400-bca9-11eb-80ae-f305083101a7.png)
 
 Menu principal
 
-![](RackMultipart20210524-4-12i4g8w_html_401cf202df8f039d.png)
+![image](https://user-images.githubusercontent.com/20344764/119358819-4949cb80-bca9-11eb-84fc-db816f6a87b3.png)
 
 Jeu
 
-![](RackMultipart20210524-4-12i4g8w_html_b681e6913345eef1.png)
+![image](https://user-images.githubusercontent.com/20344764/119358836-4c44bc00-bca9-11eb-8261-49abdd7d0531.png)
 
 Profil utilisateur
 
-![](RackMultipart20210524-4-12i4g8w_html_9b403530cf013db9.png)
+![image](https://user-images.githubusercontent.com/20344764/119358858-4e0e7f80-bca9-11eb-85f1-61c1204f88db.png)
 
 Scores
 
