@@ -1,3 +1,12 @@
+faceapi.env.monkeyPatch({
+    Canvas: HTMLCanvasElement,
+    Image: HTMLImageElement,
+    ImageData: ImageData,
+    Video: HTMLVideoElement,
+    createCanvasElement: () => document.createElement('canvas'),
+    createImageElement: () => document.createElement('img')
+})
+
 const video = document.getElementById("video");
 video.width = window.screen.width;
 video.height = window.screen.height;
@@ -22,6 +31,8 @@ function isLevelCleared(level) {
     for (var i = 0; i < level.length; i++) {
         if (level[i].breakable) {
             return false;
+        } else {
+            addScore(player.score);
         }
     }
     return true;
@@ -76,6 +87,7 @@ function keyPressed() {
         start = false;
         ball.reset();
         bricks = generateLevel(15, 15);
+        addScore(player.score);
         player.score = 0;
     }
 }
@@ -124,5 +136,19 @@ function draw() {
             screenWidth / 2,
             (screenHeight * 2) / 3
         );
+    }
+}
+
+// Add score from game
+function addScore(playerscore) {
+    getPlayerScore = playerscore;
+    if (store.get('connected') == 'true') {
+        const addscorequery = "INSERT INTO scores (user_id, score, score_date) VALUES ('" + store.get('user_id') + "', '" + getPlayerScore + "', NOW())"
+
+        con.query(addscorequery, function (err, result) {
+            if (err) throw err;
+        });
+    } else {
+        false;
     }
 }

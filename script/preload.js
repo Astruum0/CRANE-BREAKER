@@ -27,7 +27,6 @@ const userquery = 'SELECT * FROM `user` LIMIT 10';
 const scorequery = "SELECT u.username AS 'username', SUM(sc.score) AS 'total', SUM(sc.score) AS 'last5' FROM scores AS sc LEFT JOIN user AS u ON u.id = sc.user_id GROUP BY username";
 const getUserScores = "SELECT u.id AS 'user_id', SUM(sc.score) AS 'total', SUM(sc.score) AS 'last5' FROM scores AS sc LEFT JOIN user AS u ON u.id = sc.user_id WHERE username = '" + getUserId + "' GROUP BY user_id";
 
-
 // BDD connection options
 const con = mysql.createConnection({
     host: "86.234.96.174", // PC at Malgache's home
@@ -381,7 +380,7 @@ function editForm(event) {
 
     const hashOldCompare = bcrypt.compareSync(oldpassword, store.get('password'));
 
-    if (hashOldCompare != true ) {
+    if (hashOldCompare != true) {
         alert("L'ancien mot de passe ne correspond pas");
         return Error1
     } else if (newpassword.length < 8) {
