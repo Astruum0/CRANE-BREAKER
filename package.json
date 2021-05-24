@@ -16,8 +16,8 @@
         },
         "extraFiles": [
             {
-                "from": "img",
-                "to": "./img",
+                "from": "./img",
+                "to": "./resources/img",
                 "filter": [
                     "**/*"
                 ]
