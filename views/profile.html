@@ -6,11 +6,17 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
     <link rel="stylesheet" href="../styles/style.css" />
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <script src="../script/preload.js"></script>
 </head>
 
 <body onload="checkSession()" class="bg-dark text-white">
+    <div style="
+        width: 100%;
+        height: 5%;
+        -webkit-app-region: drag;
+        position: absolute;
+      "></div>
     <div class="container text-center">
         <img class="vert-move" src="../../img/logo.svg" alt="CraneBreaker logo" width="300" />
         <h1 id="titleText">CRANE BREAKER
@@ -26,13 +32,14 @@
             <h4>Score Total</h4>
             <p id="total_score"></p>
             <h4>5 meilleures parties</h4>
-            <p id="best_of_5"></p>
+            <p id="last5"></p>
             <a href="edit.html" class="btn btn-primary mt-3 col-4 mx-auto">Modifier mes informations</a>
-            <button onclick="logout()" class="btn btn-danger mt-3 col-4 mx-auto">Déconnexion</button>
+            <button onclick="logout()" class="btn btn-danger mt-3 col-4 mx-auto">
+                Déconnexion
+            </button>
             <a href="index.html" class="btn btn-light mt-3 col-2 mx-auto">Retour</a>
         </div>
     </div>
-
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"

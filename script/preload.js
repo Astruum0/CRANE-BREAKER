@@ -13,7 +13,7 @@ const getUserId = store.get('user_id');
 const getUsername = store.get('username');
 const getEmail = store.get('email');
 const getTotalScore = store.get('total_score');
-const gestLast5 = store.get('last5');
+const getLast5 = store.get('last5');
 const saltRounds = 10;
 
 // Admin hash generator
@@ -24,8 +24,8 @@ const saltRounds = 10;
 
 // SQL querys
 const userquery = 'SELECT * FROM `user` LIMIT 10';
-const scorequery = "SELECT u.username AS 'username', SUM(sc.score) AS 'total', SUM(sc.score) AS 'last5' FROM scores AS sc LEFT JOIN user AS u ON u.id = sc.user_id GROUP BY username";
-const getUserScores = "SELECT u.id AS 'user_id', SUM(sc.score) AS 'total', SUM(sc.score) AS 'last5' FROM scores AS sc LEFT JOIN user AS u ON u.id = sc.user_id WHERE username = '" + getUserId + "' GROUP BY user_id";
+const scorequery = "SELECT sc.user_id, u.username AS 'username', SUM(sc.score) AS 'total' FROM scores AS sc LEFT JOIN user AS u ON u.id = sc.user_id GROUP BY sc.user_id, username ORDER BY total DESC";
+const getUserScores = "SELECT u.id AS 'user_id', SUM(sc.score) AS total FROM scores AS sc LEFT JOIN user AS u ON u.id = sc.user_id WHERE sc.user_id = '" + getUserId + "' GROUP BY user_id";
 
 // BDD connection options
 const con = mysql.createConnection({
@@ -51,16 +51,28 @@ function checkSession() {
         con.query(getUserScores, function (err, result) {
             if (err) throw err;
 
-            store.set('total_score', result[0].total)
-
             if (getTotalScore == undefined) {
-                store.set('total_score', 0);
+                store.set('total_score', "Vous n'avez pas encore joué ! Jouez maintenant !");
+            } else {
+                store.set('total_score', result[0].total)
+            }
+        });
+
+        const last5query = "SELECT SUM(score) AS last5 FROM (SELECT score FROM scores WHERE user_id = '" + getUserId + "' ORDER BY score_date DESC LIMIT 5) AS other";
+        con.query(last5query, function (err, result) {
+            if (err) throw err;
+
+            if (getLast5 == undefined) {
+                store.set('last5', "Vous n'avez pas encore joué ! Jouez maintenant !");
+            } else {
+                store.set('last5', result[0].last5)
             }
         });
 
         document.getElementById("username").innerText = getUsername;
         document.getElementById("email").innerText = getEmail;
         document.getElementById("total_score").innerText = getTotalScore;
+        document.getElementById("last5").innerText = getLast5;
 
     } else {
         window.location.replace("login.html");
@@ -106,13 +118,15 @@ function getAllAdmin() {
         tbl.appendChild(tblBody);
         tbl.appendChild(tblhead);
 
-        // Declare ID
-        let idinc;
 
         Object.keys(result).forEach(function (key) {
             const playerresult = result[key];
             // ID increment
-            idinc++;
+            let idinc = 0;
+
+            idinc = playerresult.id;
+
+            console.log(idinc)
 
             const trrow = document.createElement("tr");
 
@@ -124,7 +138,8 @@ function getAllAdmin() {
             const text3 = document.createElement("a");
             text3.classList.add("btn");
             text3.classList.add("btn-primary");
-            text3.href = "adminEdit.html"
+            text3.onclick = store.set('idToEdit', idinc);
+            text3.href = "adminEdit.html";
             text3.innerText = "Modifier";
             text3.value = idinc;
             td1.appendChild(text1);
@@ -193,17 +208,27 @@ function getScores() {
 
             const td1 = document.createElement("td");
             const td2 = document.createElement("td");
-            const td3 = document.createElement("td");
             const text1 = document.createTextNode(scoreresult.username);
             const text2 = document.createTextNode(scoreresult.total);
-            const text3 = document.createTextNode(scoreresult.last5);
             td1.appendChild(text1);
             td2.appendChild(text2);
-            td3.appendChild(text3);
             trrow.appendChild(td1);
             trrow.appendChild(td2);
-            trrow.appendChild(td3);
             tblBody.appendChild(trrow);
+
+            // Fonction 5 derniers scores
+            const last5query = "SELECT SUM(score) AS last5 FROM (SELECT score FROM scores WHERE user_id = '" + scoreresult.user_id + "' ORDER BY score_date DESC LIMIT 5) AS other";
+            con.query(last5query, function (err, result) {
+                if (err) throw err;
+
+                Object.keys(result).forEach(function (key) {
+                    const last5result = result[key];
+                    const td3 = document.createElement("td");
+                    const text3 = document.createTextNode(last5result.last5);
+                    td3.appendChild(text3);
+                    trrow.appendChild(td3);
+                });
+            });
         });
 
         // "Retour" button
@@ -272,7 +297,7 @@ function loginForm(event) {
             if (hashCompare == true) {
                 alert("Vous êtes connecté !")
                 store.set('connected', 'true');
-                store.set('user_id', user_id)
+                store.set('user_id', result[0].id)
                 store.set('username', username)
                 store.set('email', email)
                 store.set('password', hashed)
@@ -374,7 +399,6 @@ function editForm(event) {
     let oldpassword = document.getElementById("oldpassword").value;
     let newpassword = document.getElementById("newpassword").value;
 
-    // Hash password
     const salt = bcrypt.genSaltSync(saltRounds);
     const hashednewpass = bcrypt.hashSync(newpassword, salt);
 
@@ -403,12 +427,10 @@ function editForm(event) {
 
                     // Register in BDD
                     function updateInfos() {
-                        const updatequery1 = "UPDATE user SET username = '" + username + "', email = '" + email + "', password = '" + hashednewpass + "' WHERE id = '" + store.get('user_id') + "'";
-                        const updatequery2 = "UPDATE scores SET username = '" + username + "' WHERE user_id = '" + store.get('user_id') + "'";
+                        const updatequery1 = "UPDATE user SET username = '" + username + "', email = '" + email + "', password = '" + hashednewpass + "' WHERE id = '" + getUserId + "'";
 
                         // Edit local session variables
                         if (!store.get('adminSession')) {
-                            store.set('user_id', result[0].user_id);
                             store.set('username', username);
                             store.set('email', email);
                             store.set('password', hashednewpass);
@@ -417,11 +439,6 @@ function editForm(event) {
 
                                 alert("Modifications effectuées !");
                                 window.location.replace("index.html");
-
-                                con.query(updatequery2, function (err, result) {
-                                    if (err) throw err;
-
-                                });
                             });
                         }
                     }
@@ -434,6 +451,7 @@ function editForm(event) {
 
 // Logout function
 function logout() {
+    store.delete('adminSession', 'false')
     store.set('connected', 'false');
     store.delete('username');
     store.delete('user_id');
