@@ -51,8 +51,6 @@ function checkSession() {
         con.query(getUserScores, function (err, result) {
             if (err) throw err;
 
-            console.log(result)
-
             if (getTotalScore == undefined) {
                 store.set('total_score', "Vous n'avez pas encore joué ! Jouez maintenant !");
             } else {
@@ -120,13 +118,15 @@ function getAllAdmin() {
         tbl.appendChild(tblBody);
         tbl.appendChild(tblhead);
 
-        // Declare ID
-        let idinc;
 
         Object.keys(result).forEach(function (key) {
             const playerresult = result[key];
             // ID increment
-            idinc++;
+            let idinc = 0;
+
+            idinc = playerresult.id;
+
+            console.log(idinc)
 
             const trrow = document.createElement("tr");
 
@@ -138,7 +138,8 @@ function getAllAdmin() {
             const text3 = document.createElement("a");
             text3.classList.add("btn");
             text3.classList.add("btn-primary");
-            text3.href = "adminEdit.html"
+            text3.onclick = store.set('idToEdit', idinc);
+            text3.href = "adminEdit.html";
             text3.innerText = "Modifier";
             text3.value = idinc;
             td1.appendChild(text1);
@@ -221,9 +222,6 @@ function getScores() {
                 if (err) throw err;
 
                 Object.keys(result).forEach(function (key) {
-
-                    console.log(result);
-
                     const last5result = result[key];
                     const td3 = document.createElement("td");
                     const text3 = document.createTextNode(last5result.last5);
@@ -299,7 +297,7 @@ function loginForm(event) {
             if (hashCompare == true) {
                 alert("Vous êtes connecté !")
                 store.set('connected', 'true');
-                store.set('user_id', user_id)
+                store.set('user_id', result[0].id)
                 store.set('username', username)
                 store.set('email', email)
                 store.set('password', hashed)
@@ -401,7 +399,6 @@ function editForm(event) {
     let oldpassword = document.getElementById("oldpassword").value;
     let newpassword = document.getElementById("newpassword").value;
 
-    // Hash password
     const salt = bcrypt.genSaltSync(saltRounds);
     const hashednewpass = bcrypt.hashSync(newpassword, salt);
 
@@ -430,12 +427,10 @@ function editForm(event) {
 
                     // Register in BDD
                     function updateInfos() {
-                        const updatequery1 = "UPDATE user SET username = '" + username + "', email = '" + email + "', password = '" + hashednewpass + "' WHERE id = '" + store.get('user_id') + "'";
-                        const updatequery2 = "UPDATE scores SET username = '" + username + "' WHERE user_id = '" + store.get('user_id') + "'";
+                        const updatequery1 = "UPDATE user SET username = '" + username + "', email = '" + email + "', password = '" + hashednewpass + "' WHERE id = '" + getUserId + "'";
 
                         // Edit local session variables
                         if (!store.get('adminSession')) {
-                            store.set('user_id', result[0].user_id);
                             store.set('username', username);
                             store.set('email', email);
                             store.set('password', hashednewpass);
@@ -444,11 +439,6 @@ function editForm(event) {
 
                                 alert("Modifications effectuées !");
                                 window.location.replace("index.html");
-
-                                con.query(updatequery2, function (err, result) {
-                                    if (err) throw err;
-
-                                });
                             });
                         }
                     }
@@ -461,6 +451,7 @@ function editForm(event) {
 
 // Logout function
 function logout() {
+    store.delete('adminSession', 'false')
     store.set('connected', 'false');
     store.delete('username');
     store.delete('user_id');
