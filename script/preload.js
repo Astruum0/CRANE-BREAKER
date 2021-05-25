@@ -24,7 +24,7 @@ const saltRounds = 10;
 
 // SQL querys
 const userquery = 'SELECT * FROM `user` LIMIT 10';
-const scorequery = "SELECT u.username AS 'username', SUM(sc.score) AS 'total', SUM(sc.score) AS 'last5' FROM scores AS sc LEFT JOIN user AS u ON u.id = sc.user_id GROUP BY username";
+const scorequery = "SELECT sc.user_id, u.username AS 'username', SUM(sc.score) AS 'total' FROM scores AS sc LEFT JOIN user AS u ON u.id = sc.user_id GROUP BY sc.user_id, username ORDER BY total DESC";
 const getUserScores = "SELECT u.id AS 'user_id', SUM(sc.score) AS 'total', SUM(sc.score) AS 'last5' FROM scores AS sc LEFT JOIN user AS u ON u.id = sc.user_id WHERE username = '" + getUserId + "' GROUP BY user_id";
 
 // BDD connection options
@@ -193,17 +193,30 @@ function getScores() {
 
             const td1 = document.createElement("td");
             const td2 = document.createElement("td");
-            const td3 = document.createElement("td");
             const text1 = document.createTextNode(scoreresult.username);
             const text2 = document.createTextNode(scoreresult.total);
-            const text3 = document.createTextNode(scoreresult.last5);
             td1.appendChild(text1);
             td2.appendChild(text2);
-            td3.appendChild(text3);
             trrow.appendChild(td1);
             trrow.appendChild(td2);
-            trrow.appendChild(td3);
             tblBody.appendChild(trrow);
+
+            // Fonction 5 derniers scores
+            const last5query = "SELECT SUM(score) AS last5 FROM (SELECT score FROM scores WHERE user_id = '" + scoreresult.user_id + "' ORDER BY score_date DESC LIMIT 5) AS other";
+            con.query(last5query, function (err, result) {
+                if (err) throw err;
+
+                Object.keys(result).forEach(function (key) {
+
+                    console.log(result);
+
+                    const last5result = result[key];
+                    const td3 = document.createElement("td");
+                    const text3 = document.createTextNode(last5result.last5);
+                    td3.appendChild(text3);
+                    trrow.appendChild(td3);
+                });
+            });
         });
 
         // "Retour" button
