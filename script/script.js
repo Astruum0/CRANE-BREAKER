@@ -27,6 +27,11 @@ var bricks = [];
 
 var start = false;
 
+var gameoverBackground = document.getElementsByClassName("gameoverScreen")[0];
+var gameoverDiv = document.getElementsByClassName("gameoverDiv")[0];
+var userScoreDiv = document.getElementById("userScore");
+var gameover = false;
+
 function isLevelCleared(level) {
     for (var i = 0; i < level.length; i++) {
         if (level[i].breakable) {
@@ -36,6 +41,27 @@ function isLevelCleared(level) {
         }
     }
     return true;
+}
+
+function toggleGameOver() {
+    if (!gameover) {
+        gameover = true;
+
+        gameoverBackground.style.visibility = "inherit";
+        gameoverBackground.style.opacity = 0.5;
+
+        gameoverDiv.style.visibility = "inherit";
+        gameoverDiv.style.opacity = 1;
+
+        userScoreDiv.innerText = "Votre score : " + player.score + " pts";
+    } else {
+        gameoverBackground.style.visibility = "hidden";
+        gameoverBackground.style.opacity = 0;
+
+        gameoverDiv.style.visibility = "hidden";
+        gameoverDiv.style.opacity = 0;
+        gameover = false;
+    }
 }
 
 function startVideo() {
@@ -80,7 +106,7 @@ function setup() {
 }
 
 function keyPressed() {
-    if (keyCode == 32 && !start) {
+    if (keyCode == 32 && !start && !gameover) {
         start = true;
     }
     // if (keyCode == 82) {
@@ -106,6 +132,7 @@ function draw() {
         ball.reset();
         bricks = generateLevel(15, 15);
         player.score = 0;
+        toggleGameOver();
     }
     if (isLevelCleared(bricks)) {
         start = false;
