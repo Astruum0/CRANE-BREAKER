@@ -34,7 +34,7 @@ app.on("ready", async () => {
     })
 
     // Enable renderer console
-    // timerWindow.openDevTools();
+    timerWindow.openDevTools();
     timerWindow.removeMenu();
     timerWindow.maximize(); // Both lines used for hiding bar
 });
