@@ -128,11 +128,11 @@ function draw() {
     background(0, 200);
 
     if (start && ball.update(player, bricks)) {
+        toggleGameOver();
         start = false;
         ball.reset();
         bricks = generateLevel(15, 15);
         player.score = 0;
-        toggleGameOver();
     }
     if (isLevelCleared(bricks)) {
         start = false;
