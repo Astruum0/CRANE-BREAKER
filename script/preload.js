@@ -13,7 +13,7 @@ const getUserId = store.get('user_id');
 const getUsername = store.get('username');
 const getEmail = store.get('email');
 const getTotalScore = store.get('total_score');
-const gestLast5 = store.get('last5');
+const getLast5 = store.get('last5');
 const saltRounds = 10;
 
 // Admin hash generator
@@ -25,7 +25,7 @@ const saltRounds = 10;
 // SQL querys
 const userquery = 'SELECT * FROM `user` LIMIT 10';
 const scorequery = "SELECT sc.user_id, u.username AS 'username', SUM(sc.score) AS 'total' FROM scores AS sc LEFT JOIN user AS u ON u.id = sc.user_id GROUP BY sc.user_id, username ORDER BY total DESC";
-const getUserScores = "SELECT u.id AS 'user_id', SUM(sc.score) AS 'total', SUM(sc.score) AS 'last5' FROM scores AS sc LEFT JOIN user AS u ON u.id = sc.user_id WHERE username = '" + getUserId + "' GROUP BY user_id";
+const getUserScores = "SELECT u.id AS 'user_id', SUM(sc.score) AS total FROM scores AS sc LEFT JOIN user AS u ON u.id = sc.user_id WHERE sc.user_id = '" + getUserId + "' GROUP BY user_id";
 
 // BDD connection options
 const con = mysql.createConnection({
@@ -51,16 +51,30 @@ function checkSession() {
         con.query(getUserScores, function (err, result) {
             if (err) throw err;
 
-            store.set('total_score', result[0].total)
+            console.log(result)
 
             if (getTotalScore == undefined) {
-                store.set('total_score', 0);
+                store.set('total_score', "Vous n'avez pas encore joué ! Jouez maintenant !");
+            } else {
+                store.set('total_score', result[0].total)
+            }
+        });
+
+        const last5query = "SELECT SUM(score) AS last5 FROM (SELECT score FROM scores WHERE user_id = '" + getUserId + "' ORDER BY score_date DESC LIMIT 5) AS other";
+        con.query(last5query, function (err, result) {
+            if (err) throw err;
+
+            if (getLast5 == undefined) {
+                store.set('last5', "Vous n'avez pas encore joué ! Jouez maintenant !");
+            } else {
+                store.set('last5', result[0].last5)
             }
         });
 
         document.getElementById("username").innerText = getUsername;
         document.getElementById("email").innerText = getEmail;
         document.getElementById("total_score").innerText = getTotalScore;
+        document.getElementById("last5").innerText = getLast5;
 
     } else {
         window.location.replace("login.html");
