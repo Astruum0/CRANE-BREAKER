@@ -36,11 +36,9 @@ function isLevelCleared(level) {
     for (var i = 0; i < level.length; i++) {
         if (level[i].breakable) {
             return false;
-        } else {
-            addScore(player.score);
         }
+        return true;
     }
-    return true;
 }
 
 function toggleGameOver() {
@@ -54,6 +52,7 @@ function toggleGameOver() {
         gameoverDiv.style.opacity = 1;
 
         userScoreDiv.innerText = "Votre score : " + player.score + " pts";
+        addScore(player.score);
     } else {
         gameoverBackground.style.visibility = "hidden";
         gameoverBackground.style.opacity = 0;
@@ -74,7 +73,7 @@ function startVideo() {
 video.addEventListener("play", () => {
     const displaySize = { width: video.width, height: video.height };
 
-    setInterval(async() => {
+    setInterval(async () => {
         const detections = await faceapi.detectAllFaces(
             video,
             new faceapi.TinyFaceDetectorOptions()
@@ -177,8 +176,9 @@ function addScore(playerscore) {
             getPlayerScore +
             "', NOW())";
 
-        con.query(addscorequery, function(err, result) {
+        con.query(addscorequery, function (err, result) {
             if (err) throw err;
+            console.log(result)
         });
     } else {
         false;
